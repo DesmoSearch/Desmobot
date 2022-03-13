@@ -1,4 +1,3 @@
-#INITIAL COMMITS IN DesmoSearch/DesmoSearch-THEBOT
 from keep_alive import keep_alive
 import discord
 from discord.ext import commands
