@@ -404,7 +404,9 @@ async def on_message(message):
     msg3 = await message.channel.send(embed=await getready(message))
     RecMsg = await record(message)
     #
-    
+    async with message.channel.typing():
+      await asyncio.sleep(1)
+    #
     wholeterm3=[ii.group(1) for ii in pattern03.finditer(message.content)][0]
     searchterm3=[ii.group(2) for ii in pattern03.finditer(message.content)][0]
     parameterterm3 = [[ii.group(iii) for ii in pattern03.finditer(message.content)][0] for iii in [3,5,7]]
@@ -440,7 +442,7 @@ async def on_message(message):
     xtick=AutomateXYLabels(json.loads(searchtermx)[0],json.loads(searchtermx)[1])
     ytick=AutomateXYLabels(json.loads(searchtermy)[0],json.loads(searchtermy)[1])
     searchterm3=searchterm3.replace(" ", "")
-    print([searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick])
+    
     first_run3 = True
     strlist = lambda x, y: f"[{x},{y}]"
     while True:
@@ -530,10 +532,9 @@ async def on_message(message):
 
         xtick=AutomateXYLabels(json.loads(searchtermx)[0],json.loads(searchtermx)[1])
         ytick=AutomateXYLabels(json.loads(searchtermy)[0],json.loads(searchtermy)[1])
-        print(res3.emoji)
+        
         await msg3.remove_reaction(emoji= res3.emoji, member = user3) 
-        print(searchtermx)
-        print(searchtermy)
+        
         await msg3.edit(embed=graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick))
         RecMsg = await record(msg3,RecMsg)
   elif message.content=="!loading":
@@ -736,7 +737,9 @@ async def record(msg0,msg1=''):
   else:
     if (msg1.channel.id==950332971842404382):
       channel001 = client.get_channel(950332992079925288)
-      msg1 = await channel001.send(msg1.jump_url)
+      msg01 = await channel001.send(msg1.jump_url)
+      await msg1.edit(content=msg1.content+'\n'+msg01.jump_url)
+      msg1=msg01
     return await msg1.reply(content='content: '+str(msg0.content)+'\nauthor: '+str(msg0.author)+';'+str(msg0.author.id)+'\nid: '+str(msg0.channel.id)+';'+str(msg0.id),embed=(msg0.embeds[0]) if msg0.embeds else None,files=[await f.to_file() for f in msg0.attachments])
     
 ##########
