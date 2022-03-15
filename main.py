@@ -15,12 +15,10 @@ from treelib import Tree
 from getinfo import getinfo, difference
 import random
 import difflib
+from Variables import objowner,GraphsList,thetitles,ParentGraphsList
 
+print(len(GraphsList))
 print(db.keys())
-ParentGraphsList=db['ParentGraphsList']
-thetitles=db['thetitles']
-GraphsList=db['GraphsList']
-objowner=db['objowner']
 noofresults=5;
 
 gifsG=[]
@@ -139,7 +137,7 @@ async def on_raw_reaction_add(payload):
 async def on_message(message): 
   pattern=re.compile(r"!desmos ([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?")
   x=pattern.finditer(message.content)
-  pattern02=re.compile(r"!https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
+  pattern02=re.compile(r"!<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?")
   x02=pattern02.finditer(message.content)
   pattern03=re.compile(r"(!graph ([^?]+)(?: *\?(?:(x|y|size)(?:=(\[.*?,.*?\]))?)(?:&(x|y|size)(?:=(\[.*?,.*?\]))?)?(?:&(x|y|size)(?:=(\[.*?,.*?\]))?)?)?)")
   x03=pattern03.finditer(message.content)
@@ -879,7 +877,7 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
       ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
       embed.set_footer(text=ordinal(fromSearch[1])+" graph from \""+searchterm+"\"\n"+'→'.join(historylist))
   elif fromSearch[0] and fromSearch[1] is None:
-    pattern020=re.compile(r"!https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
+    pattern020=re.compile(r"!<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?")
     thehash010=[ii.group(1) for ii in pattern020.finditer(message.content)][0]
     embed.set_footer(text='!https://www.desmos.com/calculator/'+thehash010+'\n'+'→'.join(historylist))
   
