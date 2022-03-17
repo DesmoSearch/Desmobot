@@ -385,7 +385,7 @@ async def on_message(message):
     #
     
     helpembed=nextcord.Embed(title="Commands",description="!dhelp, !desmos, ![+desmoslink]")
-    helpembed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
+    helpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     await message.channel.send(embed=helpembed,content='')
     
   elif len(list(x03))==1:
@@ -677,7 +677,7 @@ def diffembed(Gnum,num,result,max_page,message,graph1,graph2,ghash1list):
     embed = nextcord.Embed(color=0x12793e, title='/'+graph1,description=thedescription)
   else:
     embed = nextcord.Embed(color=0x12793e, title='/'+graph1+' vs /'+graph2,description=thedescription)
-  embed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
+  embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
   embed.set_footer(text="Page: "+str(num)+"/"+str(max_page)+'\n'+'←'.join(reversed(['*'+gg+'*' if gg==graph1 else gg for gg in ghash1list])))
   if graph2 is not None:
     embed.add_field(name="Similarity percentage", value=str(round(result[0]*100,2))+'%', inline=False)
@@ -703,7 +703,7 @@ def graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchterm
   gembed.add_field(name="Domain", value=searchtermx, inline=True)
   gembed.add_field(name="Range", value=searchtermy, inline=True)
   gembed.add_field(name="Image Dimensions", value=f"[width,height]: {searchtermsize}", inline=False)
-  gembed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
+  gembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
   gembed.set_image(url=thelink)
   return gembed
 
@@ -794,7 +794,7 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
     embed.add_field(name="Variables", value="```"+' , '.join(dainfo['variables'])+"```", inline=False)
   elif len(str(dainfo['variables']))>1020:
     embed.add_field(name="Variables", value="```"+"Contains "+str(len(dainfo['variables']))+" variables"+"```", inline=False)
-  embed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
+  embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
 
 #history
   graphnodes=[]
@@ -857,7 +857,7 @@ def createembed(Gnum,num,result,max_page,message):
   pattern2=re.compile(r"!desmos (([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?)")
   searchterm=[ii2.group(1) for ii2 in pattern2.finditer(message.content)][0]
   embed = nextcord.Embed(color=0x12793e, title=str(len(result))+" graphs for \""+searchterm+"\"",description=thedescription)
-  embed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
+  embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
   embed.set_footer(text="Page: "+str(num)+"/"+str(max_page))
   if Gnum>-1:
     dahash=result[Gnum-1]

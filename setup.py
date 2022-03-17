@@ -20,7 +20,7 @@ async def loadinggif(msg0):
   selectR=random.randint(0,len(gifsG)-1)
   user = await client.fetch_user(str(usersG[selectR]))
   embed=nextcord.Embed(title='Loading...') 
-  embed.set_author(name='Gif by '+str(user), icon_url=user.avatar.url)
+  embed.set_author(name='Gif by '+str(user), icon_url=user.display_avatar.url)
   embed.set_image(url=gifsG[selectR])
   embed.set_footer(text='Shared in #looping-gifs in the https://dsc.gg/me314 discord server')
   return embed

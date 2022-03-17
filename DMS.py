@@ -31,7 +31,7 @@ async def Wholesome(x,webhook):
     des=str(x.author.id)+'|'+str(x.id)
   else:
     des=str(x.channel.id)+';'+str(x.id)
-  return await webhook.send(content=x.content, username=str(x.author), avatar_url=x.author.avatar.url,embed=nextcord.Embed(description=des),files=[await f.to_file() for f in x.attachments],wait=True)
+  return await webhook.send(content=x.content, username=str(x.author), avatar_url=x.author.display_avatar.url,embed=nextcord.Embed(description=des),files=[await f.to_file() for f in x.attachments],wait=True)
 
   
 async def DMrec(msg,client):
