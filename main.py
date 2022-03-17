@@ -1,9 +1,9 @@
 from keep_alive import keep_alive
-import discord
-from discord.ext import commands
+import nextcord
+from nextcord.ext import commands
 #from discord_slash import SlashCommand, SlashContext
 #from discord_slash.utils.manage_commands import create_choice, create_option
-from discord import DMChannel
+from nextcord import DMChannel
 import os
 import json
 import re
@@ -16,6 +16,7 @@ from getinfo import getinfo, difference
 import random
 import difflib
 from Variables import objowner,GraphsList,thetitles,ParentGraphsList
+from DMS import DMrec, DMreact
 
 print(len(GraphsList))
 print(db.keys())
@@ -24,13 +25,14 @@ noofresults=5;
 gifsG=[]
 usersG=[]
 setup = True
-client = commands.Bot(command_prefix="_")
+intents = nextcord.Intents.all()
+client = commands.Bot(command_prefix="_",intents=intents)
 #slash = SlashCommand(client, sync_commands=True)
 token = os.environ.get("DISCORD_BOT_SECRET")
 
 @client.event
 async def on_ready():
-  await client.change_presence(activity=discord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} searches done!"))
+  await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} searches done!"))
   global setup
   if setup:
     await setuploading()
@@ -65,7 +67,7 @@ async def on_raw_reaction_add(payload):
     gifs2=([mm.url for mm in message0.attachments]+[ii.group(1) for ii in pattern.finditer(message0.content)])
     users2=[str(message0.author.id) for i in range(len(gifs2))]
     if len(combine(gifs+gifs2,users+users2))<2000 and damsg.author.id==944269890301345884:
-      await damsg.edit(content=combine(gifs+gifs2,users+users2))
+      damsg=await damsg.edit(content=combine(gifs+gifs2,users+users2))
     else:
       await channel.send(content=combine(gifs2,users2))
 
@@ -143,7 +145,7 @@ async def on_message(message):
   x03=pattern03.finditer(message.content)
   pattern04=re.compile(r"!\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))(?: vs \/((?:[a-z0-9]{20})|(?:[a-z0-9]{10})))?")
   x04=pattern04.finditer(message.content)
-  if message.author == client.user:
+  if message.author == client.user or message.author.bot:
     return
   elif len(list(x))==1:
     #
@@ -235,7 +237,7 @@ async def on_message(message):
     while True:
       if first_run:
           first_run = False
-          await msg.edit(embed=createembed(-1,num,searchresult,max_page,message))
+          msg=await msg.edit(embed=createembed(-1,num,searchresult,max_page,message))
           RecMsg = await record(msg,RecMsg)
 
       reactmoji = []
@@ -289,7 +291,7 @@ async def on_message(message):
           GnumDisplay=0
           infograph=0
           await msg.clear_reactions()
-          await msg.edit(embed=createembed(-1,num,searchresult,max_page,message))
+          msg=await msg.edit(embed=createembed(-1,num,searchresult,max_page,message))
           RecMsg = await record(msg,RecMsg)
       elif '⏩' in str(res.emoji):
           num = num + 1
@@ -297,14 +299,14 @@ async def on_message(message):
           GnumDisplay=0
           infograph=0
           await msg.clear_reactions()
-          await msg.edit(embed=createembed(-1,num,searchresult,max_page,message))
+          msg=await msg.edit(embed=createembed(-1,num,searchresult,max_page,message))
           RecMsg = await record(msg,RecMsg)
       elif '🔽' in str(res.emoji):
           Gnum  = Gnum if GnumDisplay==0 else Gnum+1
           GnumDisplay=1
           num = math.ceil(Gnum/noofresults)
           await msg.clear_reactions()
-          await msg.edit(embed=createembed(Gnum,num,searchresult,max_page,message))
+          msg=await msg.edit(embed=createembed(Gnum,num,searchresult,max_page,message))
           RecMsg = await record(msg,RecMsg)
           dachoose=[None,searchresult[Gnum-1],[searchresult[Gnum-1]],RecMsg]
       elif '🔼' in str(res.emoji):
@@ -312,7 +314,7 @@ async def on_message(message):
           GnumDisplay=1
           num = math.ceil(Gnum/noofresults)
           await msg.clear_reactions()
-          await msg.edit(embed=createembed(Gnum,num,searchresult,max_page,message))
+          msg=await msg.edit(embed=createembed(Gnum,num,searchresult,max_page,message))
           RecMsg = await record(msg,RecMsg)
           dachoose=[None,searchresult[Gnum-1],[searchresult[Gnum-1]],RecMsg]
       elif '✅' in str(res.emoji):
@@ -325,7 +327,7 @@ async def on_message(message):
           await msg.clear_reactions()
           dachoose=[None,searchresult[Gnum-1],[searchresult[Gnum-1]],RecMsg]
           if infograph==0:
-            await msg.edit(embed=createembed(-1 if GnumDisplay==0 else Gnum,num,searchresult,max_page,message))
+            msg=await msg.edit(embed=createembed(-1 if GnumDisplay==0 else Gnum,num,searchresult,max_page,message))
             RecMsg = await record(msg,RecMsg)
       
       if infograph==1:
@@ -338,11 +340,11 @@ async def on_message(message):
     
     
     thehash01=[ii.group(1) for ii in pattern02.finditer(message.content)][0]
-    await message.edit(suppress=True)
+    message=await message.edit(suppress=True)
     #
     msg2 = await message.channel.send(embed=await getready(message))
     RecMsg = await record(message)
-    await RecMsg.edit(suppress=True)
+    RecMsg = await RecMsg.edit(suppress=True)
     #
 
 
@@ -395,8 +397,8 @@ async def on_message(message):
     RecMsg = await record(message)
     #
     
-    helpembed=discord.Embed(title="Commands",description="!dhelp, !desmos, ![+desmoslink]")
-    helpembed.set_author(name=str(message.author), icon_url=message.author.avatar_url)
+    helpembed=nextcord.Embed(title="Commands",description="!dhelp, !desmos, ![+desmoslink]")
+    helpembed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
     await message.channel.send(embed=helpembed,content='')
     
   elif len(list(x03))==1:
@@ -450,7 +452,7 @@ async def on_message(message):
         if first_run3:
             reactmoji3.extend(['🔄','➡️','⬆️','⬅️','⬇️','🔬','🔭','✅'])
             first_run3 = False
-            await msg3.edit(embed=graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick))
+            msg3=await msg3.edit(embed=graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick))
             RecMsg = await record(msg3,RecMsg)
           
         thex0=json.loads(searchtermx)[0]
@@ -535,7 +537,7 @@ async def on_message(message):
         
         await msg3.remove_reaction(emoji= res3.emoji, member = user3) 
         
-        await msg3.edit(embed=graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick))
+        msg3=await msg3.edit(embed=graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick))
         RecMsg = await record(msg3,RecMsg)
   elif message.content=="!loading":
     await message.channel.send(embed=await getready(message))
@@ -561,7 +563,7 @@ async def on_message(message):
     while True:
       if first_run4:
           first_run4 = False
-          await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          msg4=await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
           RecMsg = await record(msg4,RecMsg)
     
       reactmoji4 = []
@@ -615,28 +617,28 @@ async def on_message(message):
           Gnum4 = (num4-1)*noofresults+1
           GnumDisplay = 0
           await msg4.clear_reactions()
-          await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          msg4=await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
           RecMsg = await record(msg4,RecMsg)
       elif '⏩' in str(res4.emoji):
           num4 = num4 + 1
           Gnum4 = (num4-1)*noofresults+1
           GnumDisplay = 0
           await msg4.clear_reactions()
-          await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          msg4=await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
           RecMsg = await record(msg4,RecMsg)
       elif '🔽' in str(res4.emoji):
           Gnum4  = Gnum4 if GnumDisplay==0 else Gnum4+1
           num4 = math.ceil(Gnum4/noofresults)
           GnumDisplay = 1
           await msg4.clear_reactions()
-          await msg4.edit(embed=diffembed(Gnum4,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          msg4=await msg4.edit(embed=diffembed(Gnum4,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
           RecMsg = await record(msg4,RecMsg)
       elif '🔼' in str(res4.emoji):
           Gnum4  = Gnum4 if GnumDisplay==0 else Gnum4-1
           num4 = math.ceil(Gnum4/noofresults)
           GnumDisplay = 1
           await msg4.clear_reactions()
-          await msg4.edit(embed=diffembed(Gnum4,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          msg4=await msg4.edit(embed=diffembed(Gnum4,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
           RecMsg = await record(msg4,RecMsg)
       elif '👈' in str(res4.emoji):
           async with message.channel.typing():
@@ -651,7 +653,8 @@ async def on_message(message):
           GnumDisplay = 0
           max_page4=math.ceil(len(searchresult4)/noofresults)
           await msg4.clear_reactions()
-          await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          msg4=await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          RecMsg = await record(msg4,RecMsg)
       elif '👉' in str(res4.emoji):
           async with message.channel.typing():
             hash1,hash2=ghash1list[-2],ghash1list[-1]
@@ -663,7 +666,7 @@ async def on_message(message):
           GnumDisplay = 0
           max_page4=math.ceil(len(searchresult4)/noofresults)
           await msg4.clear_reactions()
-          await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
+          msg4=await msg4.edit(embed=diffembed(-1,num4,searchresult04,max_page4,message,hash1,hash2,ghash1list))
           RecMsg = await record(msg4,RecMsg)
       elif '✅' in str(res4.emoji):
           return await msg4.clear_reactions()
@@ -684,10 +687,10 @@ def diffembed(Gnum,num,result,max_page,message,graph1,graph2,ghash1list):
     thedescription = 'Description is greater than 4000 characters.\nSelect expressions using :arrow_down_small: , :arrow_up_small:'
 
   if graph2 is None:
-    embed = discord.Embed(color=0x12793e, title='/'+graph1,description=thedescription)
+    embed = nextcord.Embed(color=0x12793e, title='/'+graph1,description=thedescription)
   else:
-    embed = discord.Embed(color=0x12793e, title='/'+graph1+' vs /'+graph2,description=thedescription)
-  embed.set_author(name=str(message.author), icon_url=message.author.avatar_url)
+    embed = nextcord.Embed(color=0x12793e, title='/'+graph1+' vs /'+graph2,description=thedescription)
+  embed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
   embed.set_footer(text="Page: "+str(num)+"/"+str(max_page)+'\n'+'←'.join(reversed(['*'+gg+'*' if gg==graph1 else gg for gg in ghash1list])))
   if graph2 is not None:
     embed.add_field(name="Similarity percentage", value=str(round(result[0]*100,2))+'%', inline=False)
@@ -724,8 +727,8 @@ async def setuploading():
 async def loadinggif(msg0):
   selectR=random.randint(0,len(gifsG)-1)
   user = await client.fetch_user(str(usersG[selectR]))
-  embed=discord.Embed(title='Loading...') 
-  embed.set_author(name='Gif by '+str(user), icon_url=user.avatar_url)
+  embed=nextcord.Embed(title='Loading...') 
+  embed.set_author(name='Gif by '+str(user), icon_url=user.avatar.url)
   embed.set_image(url=gifsG[selectR])
   embed.set_footer(text='Shared in #looping-gifs in the https://dsc.gg/me314 discord server')
   return embed
@@ -738,19 +741,19 @@ async def record(msg0,msg1=''):
     if (msg1.channel.id==950332971842404382):
       channel001 = client.get_channel(950332992079925288)
       msg01 = await channel001.send(msg1.jump_url)
-      await msg1.edit(content=msg1.content+'\n'+msg01.jump_url)
+      msg1=await msg1.edit(content=msg1.content+'\n'+msg01.jump_url)
       msg1=msg01
     return await msg1.reply(content='content: '+str(msg0.content)+'\nauthor: '+str(msg0.author)+';'+str(msg0.author.id)+'\nid: '+str(msg0.channel.id)+';'+str(msg0.id),embed=(msg0.embeds[0]) if msg0.embeds else None,files=[await f.to_file() for f in msg0.attachments])
     
 ##########
 def graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick):
   thelink=f"https://graphsketch.com/render.php?eqn1_eqn={searchterm3}&x_min={json.loads(searchtermx)[0]}&x_max={json.loads(searchtermx)[1]}&y_min={json.loads(searchtermy)[0]}&y_max={json.loads(searchtermy)[1]}&image_w={json.loads(searchtermsize)[0]}&image_h={json.loads(searchtermsize)[1]}&do_grid=1&x_tick={xtick}&y_tick={ytick}&x_label_freq=5&y_label_freq=5"
-  gembed=discord.Embed(title=wholeterm3,description=f"[Open image in a new tab]({thelink})")
+  gembed=nextcord.Embed(title=wholeterm3,description=f"[Open image in a new tab]({thelink})")
   gembed.add_field(name="Graph(s)", value=searchterm3, inline=False)
   gembed.add_field(name="Domain", value=searchtermx, inline=True)
   gembed.add_field(name="Range", value=searchtermy, inline=True)
   gembed.add_field(name="Image Dimensions", value=f"[width,height]: {searchtermsize}", inline=False)
-  gembed.set_author(name=str(message.author), icon_url=message.author.avatar_url)
+  gembed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
   gembed.set_image(url=thelink)
   return gembed
 
@@ -804,7 +807,7 @@ async def aboutchain(message,thehash01,msg2,fromSearch):
     await msg2.remove_reaction(emoji= "👉", member = user2)
     await msg2.remove_reaction(emoji= "👈", member = user2)
     await msg2.remove_reaction(emoji= "🖱️", member = user2)
-  await msg2.edit(embed=aboutembed(message,newhash,fromSearch,subgraphs[choose%len(subgraphs)],historylist),content='')
+  msg2=await msg2.edit(embed=aboutembed(message,newhash,fromSearch,subgraphs[choose%len(subgraphs)],historylist),content='')
   #
   RecMsg = fromSearch[4][3]
   if RecMsg is None:
@@ -821,7 +824,7 @@ async def aboutchain(message,thehash01,msg2,fromSearch):
 
 def aboutembed(message,thehash,fromSearch,underline,historylist):
   dainfo=getinfo("https://www.desmos.com/calculator/"+thehash)
-  embed = discord.Embed(color=0x12793e, title=dainfo['title'],description="https://www.desmos.com/calculator/"+thehash)
+  embed = nextcord.Embed(color=0x12793e, title=dainfo['title'],description="https://www.desmos.com/calculator/"+thehash)
   if 'thumbUrl' in dainfo.keys():
     embed.set_image(url=dainfo['thumbUrl'])
   if objowner.get(str(thehash),None) is not None:
@@ -841,7 +844,7 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
     embed.add_field(name="Variables", value="```"+' , '.join(dainfo['variables'])+"```", inline=False)
   elif len(str(dainfo['variables']))>1020:
     embed.add_field(name="Variables", value="```"+"Contains "+str(len(dainfo['variables']))+" variables"+"```", inline=False)
-  embed.set_author(name=str(message.author), icon_url=message.author.avatar_url)
+  embed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
 
 #history
   graphnodes=[]
@@ -903,8 +906,8 @@ def createembed(Gnum,num,result,max_page,message):
   
   pattern2=re.compile(r"!desmos (([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?)")
   searchterm=[ii2.group(1) for ii2 in pattern2.finditer(message.content)][0]
-  embed = discord.Embed(color=0x12793e, title=str(len(result))+" graphs for \""+searchterm+"\"",description=thedescription)
-  embed.set_author(name=str(message.author), icon_url=message.author.avatar_url)
+  embed = nextcord.Embed(color=0x12793e, title=str(len(result))+" graphs for \""+searchterm+"\"",description=thedescription)
+  embed.set_author(name=str(message.author), icon_url=message.author.avatar.url)
   embed.set_footer(text="Page: "+str(num)+"/"+str(max_page))
   if Gnum>-1:
     dahash=result[Gnum-1]
@@ -933,6 +936,38 @@ def AutomateXYLabels(first,second):
   LeastDiff = [abs(NearestArray[j]*(10**MultiplyNearestArrayBy[i])-XLabel) for i in range(2) for j in range(3)];
   XLabel=XLabelList[LeastDiff.index(min(LeastDiff))]
   return (XLabel/5)
+
+@client.listen()
+async def on_message(msg):
+  await DMrec(msg,client)
+
+@client.listen()
+async def on_raw_reaction_add(payload):
+  emoji=payload.emoji
+  user=await client.fetch_user(payload.user_id)
+  messageid=payload.message_id
+  channelid=payload.channel_id
+  channel0 = client.get_channel(channelid)
+  message0=''
+  if payload.guild_id is None:
+    message0 = await user.fetch_message(messageid)
+  else:
+    message0 = await channel0.fetch_message(messageid)
+  await DMreact(emoji,user,message0,client,True)
+
+@client.listen()
+async def on_raw_reaction_remove(payload):
+  emoji=payload.emoji
+  user=await client.fetch_user(payload.user_id)
+  messageid=payload.message_id
+  channelid=payload.channel_id
+  channel0 = client.get_channel(channelid)
+  message0=''
+  if payload.guild_id is None:
+    message0 = await user.fetch_message(messageid)
+  else:
+    message0 = await channel0.fetch_message(messageid)
+  await DMreact(emoji,user,message0,client,False)
 
 
 keep_alive()
