@@ -1,9 +1,6 @@
 from keep_alive import keep_alive
 import nextcord
 from nextcord.ext import commands
-#from discord_slash import SlashCommand, SlashContext
-#from discord_slash.utils.manage_commands import create_choice, create_option
-from nextcord import DMChannel
 import os
 import json
 import re
@@ -13,30 +10,20 @@ import math
 import maya
 from treelib import Tree
 from getinfo import getinfo, difference
-import random
 import difflib
 from Variables import objowner,GraphsList,thetitles,ParentGraphsList
 from DMS import DMrec, DMreact
+from setup import Onready, loadinggif, getready, dmsend, client, record
 
 print(len(GraphsList))
 print(db.keys())
 noofresults=5;
 
-gifsG=[]
-usersG=[]
-setup = True
-intents = nextcord.Intents.all()
-client = commands.Bot(command_prefix="_",intents=intents)
-#slash = SlashCommand(client, sync_commands=True)
 token = os.environ.get("DISCORD_BOT_SECRET")
 
 @client.event
 async def on_ready():
-  await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} searches done!"))
-  global setup
-  if setup:
-    await setuploading()
-    setup=False
+  await Onready()
 
 @client.event
 async def on_raw_reaction_add(payload):
@@ -707,44 +694,7 @@ def diffembed(Gnum,num,result,max_page,message,graph1,graph2,ghash1list):
   return embed
   
 #----------------------------------------------------------
-async def getready(message):
-  db['searches']=db['searches']+1
-  await on_ready()
-  await dmsend(repr(message)+"\n\n"+message.content)
-  return await loadinggif(message)
 
-async def dmsend(msg):
-    user = await client.fetch_user("686012491607572515")
-    await DMChannel.send(user,"```"+msg+"```")
-
-async def setuploading():
-  channelG = client.get_channel(948482596197777442)
-  async for msgG in channelG.history(limit=10000):
-    C=(msgG.content.replace(" ", "")).split(",")
-    gifsG.extend(C[1::2])
-    usersG.extend(C[0::2])
-
-async def loadinggif(msg0):
-  selectR=random.randint(0,len(gifsG)-1)
-  user = await client.fetch_user(str(usersG[selectR]))
-  embed=nextcord.Embed(title='Loading...') 
-  embed.set_author(name='Gif by '+str(user), icon_url=user.avatar.url)
-  embed.set_image(url=gifsG[selectR])
-  embed.set_footer(text='Shared in #looping-gifs in the https://dsc.gg/me314 discord server')
-  return embed
-
-async def record(msg0,msg1=''):
-  if msg1 == '':
-    channel = client.get_channel(950332971842404382)
-    return await channel.send(content='content: '+str(msg0.content)+'\nauthor: '+str(msg0.author)+';'+str(msg0.author.id)+'\nid: '+str(msg0.channel.id)+';'+str(msg0.id),embed=(msg0.embeds[0]) if msg0.embeds else None,files=[await f.to_file() for f in msg0.attachments])
-  else:
-    if (msg1.channel.id==950332971842404382):
-      channel001 = client.get_channel(950332992079925288)
-      msg01 = await channel001.send(msg1.jump_url)
-      msg1=await msg1.edit(content=msg1.content+'\n'+msg01.jump_url)
-      msg1=msg01
-    return await msg1.reply(content='content: '+str(msg0.content)+'\nauthor: '+str(msg0.author)+';'+str(msg0.author.id)+'\nid: '+str(msg0.channel.id)+';'+str(msg0.id),embed=(msg0.embeds[0]) if msg0.embeds else None,files=[await f.to_file() for f in msg0.attachments])
-    
 ##########
 def graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick):
   thelink=f"https://graphsketch.com/render.php?eqn1_eqn={searchterm3}&x_min={json.loads(searchtermx)[0]}&x_max={json.loads(searchtermx)[1]}&y_min={json.loads(searchtermy)[0]}&y_max={json.loads(searchtermy)[1]}&image_w={json.loads(searchtermsize)[0]}&image_h={json.loads(searchtermsize)[1]}&do_grid=1&x_tick={xtick}&y_tick={ytick}&x_label_freq=5&y_label_freq=5"
