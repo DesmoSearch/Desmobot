@@ -51,8 +51,8 @@ async def on_raw_reaction_add(payload):
 
   elif emoji.name=='🔭':
     await expandG(emoji,user,messageid,channelid,channel0,message0)
-  elif channelid==950043685754658866:
-    contentarray=message0.content.split('\n')
+  elif channelid in [950332971842404382,950332992079925288]:
+    contentarray=(re.sub('\nhttps:\/\/discord.com\/channels\/[0-9]+\/[0-9]+\/[0-9]+','',message0.content)).split('\n')
     content=('\n'.join(contentarray[0:-2]))[9:]
     author=contentarray[-2:-1][0][8:].split(';')
     Mid=contentarray[-1:][0][4:].split(';')

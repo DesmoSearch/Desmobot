@@ -23,11 +23,13 @@ def Decode(msg):
       string=string.replace('\u200E­','1')
       return(int(string,2))
     
-async def Wholesome(x,webhook):
+async def Wholesome(x,webhook,channelsendto ):
   if 'Direct Message' in str(x.channel):
     des=str(x.author.id)+'|'+str(x.id)
   else:
     des=str(x.channel.id)+';'+str(x.id)
+  xy=await channelsendto.send('<@686012491607572515>')
+  await xy.delete()
   return await webhook.send(content=x.content, username=str(x.author), avatar_url=x.author.display_avatar.url,embed=nextcord.Embed(description=des),files=[await f.to_file() for f in x.attachments],wait=True)
 
 async def DMrec(msg,client):
@@ -46,7 +48,7 @@ async def DMrec(msg,client):
       REPLYTO=await channel.send(content='content: '+str(REPmessage.content)+'\nauthor: '+str(REPmessage.author)+';'+str(REPmessage.author.id)+'\nid: '+str(REPmessage.channel.id)+';'+str(REPmessage.id),embed=(REPmessage.embeds[0]) if REPmessage.embeds else None,files=[await f.to_file() for f in REPmessage.attachments])
     async with aiohttp.ClientSession() as session: 
       webhook = Webhook.from_url(DMurl, session=session)
-      save0=await Wholesome(msg,webhook)
+      save0=await Wholesome(msg,webhook,channel)
       if REPLYTO:
         await save0.edit(content=REPLYTO.jump_url+'\n'+save0.content)
       
