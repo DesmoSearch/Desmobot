@@ -3,7 +3,6 @@ from nextcord import Webhook, DMChannel
 import aiohttp
 from replit import db
 import re
-import asyncio
 
 DMurl=db['dm']
 DMthread=953517900172501042
@@ -24,8 +23,6 @@ def Decode(msg):
       string=string.replace('\u200E­','1')
       return(int(string,2))
     
-    
-
 async def Wholesome(x,webhook):
   if 'Direct Message' in str(x.channel):
     des=str(x.author.id)+'|'+str(x.id)
@@ -33,7 +30,6 @@ async def Wholesome(x,webhook):
     des=str(x.channel.id)+';'+str(x.id)
   return await webhook.send(content=x.content, username=str(x.author), avatar_url=x.author.display_avatar.url,embed=nextcord.Embed(description=des),files=[await f.to_file() for f in x.attachments],wait=True)
 
-  
 async def DMrec(msg,client):
   REPmessage=''
   if msg.reference is not None:
@@ -42,7 +38,6 @@ async def DMrec(msg,client):
     return
   elif 'Direct Message with' in str(msg.channel) or (getattr(getattr(REPmessage,'author',0),'id',0)==client.user.id and msg.channel.id!=DMthread):
     channel = client.get_channel(DMthread)
-    DaDescription=''
     Check=(Decode(REPmessage))
     REPLYTO=''
     if Check:
@@ -73,6 +68,7 @@ async def DMrec(msg,client):
           messagereplyto = await user00.fetch_message(msgIDget)
           await messagereplyto.reply(Encode(msg)+msg.content,files=[await f.to_file() for f in msg.attachments])
 ##################
+
 async def DMreact(emoji,user,message,client,addStatus):
   if user.id==686012491607572515 and message.channel.id==DMthread:
     if getattr(message,'embeds',False):
@@ -98,4 +94,3 @@ async def DMreact(emoji,user,message,client,addStatus):
       message0 = await channel.fetch_message(Check)
       if addStatus:
         await message0.add_reaction(emoji)
-    

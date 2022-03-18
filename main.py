@@ -1,6 +1,5 @@
 from keep_alive import keep_alive
 import nextcord
-from nextcord.ext import commands
 import os
 import re
 from replit import db
@@ -9,12 +8,11 @@ import math
 import maya
 from treelib import Tree
 from getinfo import getinfo
-import difflib
 from Variables import objowner,GraphsList,thetitles,ParentGraphsList,noofresults
-from DMS import DMrec, DMreact
-from setup import Onready, getready, dmsend, client, record, checkIfDuplicates
-from Graph import GraphStuff
-from Comparison import DiffStuff
+from setup import Onready, getready, client, record, checkIfDuplicates
+from feature.DMS import DMrec, DMreact
+from feature.Graph import GraphStuff
+from feature.Comparison import DiffStuff
 
 print(len(GraphsList))
 print(db.keys())

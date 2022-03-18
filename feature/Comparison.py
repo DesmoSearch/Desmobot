@@ -1,4 +1,4 @@
-from setup import getready, client, record, checkIfDuplicates
+from setup import getready, client, record
 from getinfo import difference
 from Variables import noofresults
 import re
