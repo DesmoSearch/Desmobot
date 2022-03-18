@@ -53,3 +53,11 @@ async def record(msg0,msg1=''):
       msg1=await msg1.edit(content=msg1.content+'\n'+msg01.jump_url)
       msg1=msg01
     return await msg1.reply(content='content: '+str(msg0.content)+'\nauthor: '+str(msg0.author)+';'+str(msg0.author.id)+'\nid: '+str(msg0.channel.id)+';'+str(msg0.id),embed=(msg0.embeds[0]) if msg0.embeds else None,files=[await f.to_file() for f in msg0.attachments])
+
+def checkIfDuplicates(listOfElems):
+    ''' Check if given list contains any duplicates '''
+    listOfElems=list(filter((None).__ne__, listOfElems))
+    if len(listOfElems) == len(set(listOfElems)):
+        return False
+    else:
+        return True
