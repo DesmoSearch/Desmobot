@@ -103,6 +103,7 @@ async def DhelpStuff(message):
   num4 = 1
   Gnum4 = 1
   GnumDisplay = 0
+  infocard=0
   while True:
     if first_run4:
         first_run4 = False
@@ -127,7 +128,8 @@ async def DhelpStuff(message):
         reactmoji4.append('🔼')
     elif Gnum4 > 1 and Gnum4<len(searchresult4):
         reactmoji4.extend(['🔼', '🔽'])
-    
+    if GnumDisplay==1:
+      reactmoji4.append('🔎')
     reactmoji4.append('✅')
     if str(message.author.id)=='686012491607572515':
        reactmoji4.append('❌')
@@ -182,13 +184,22 @@ async def DhelpStuff(message):
         await msg4.clear_reactions()
         msg4=await msg4.edit(embed=dhelpembed(Gnum4 if GnumDisplay == 1 else -1,num4,searchresult4,max_page4,message))
         RecMsg = await record(msg4,RecMsg)
+    elif '🔎' in str(res4.emoji):
+      infocard=1-infocard
+      await msg4.clear_reactions()
+      if infocard==0:
+        msg4=await msg4.edit(embed=dhelpembed(Gnum4 if GnumDisplay == 1 else -1,num4,searchresult4,max_page4,message))
+        RecMsg = await record(msg4,RecMsg)
     elif '✅' in str(res4.emoji):
         return await msg4.clear_reactions()
     elif '❌' in str(res4.emoji):
         await message.delete()
         return await msg4.delete()
+    if infocard==1:
+      msg4=await msg4.edit(embed=dhelpembed(Gnum4,num4,searchresult4,max_page4,message,True))
+      RecMsg = await record(msg4,RecMsg)
 
-def dhelpembed(Gnum,num,result,max_page,message):
+def dhelpembed(Gnum,num,result,max_page,message,infocard=False):
   datahashes=result[noofresults*(num-1):noofresults*num+1]
   n1='\n'
   thedescription="".join(f'{"⇓⇓⇓"+n1+"> " if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. {" ".join(datahashes[i][1].description.split()[:10])} ...\n'for i in range(len(datahashes)))
@@ -196,15 +207,14 @@ def dhelpembed(Gnum,num,result,max_page,message):
   pattern06=re.compile(r'!dhelp ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
   searchterm=[ii2.group(1) for ii2 in pattern06.finditer(message.content)][0]
   embed=''
-
-  embed = nextcord.Embed(color=0x12793e, title=str(len(result))+" results for \""+searchterm+"\"",description=thedescription)
-  embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
-  embed.set_footer(text="Page: "+str(num)+"/"+str(max_page))
-  if Gnum!=-1:
-    embed00=result[Gnum-1][1]
+  if not infocard:
+    embed = nextcord.Embed(color=0x12793e, title=str(len(result))+" results for \""+searchterm+"\"",description=thedescription)
+    embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
+    embed.set_footer(text="Page: "+str(num)+"/"+str(max_page))
+  if Gnum!=-1 and infocard:
+    embed=result[Gnum-1][1]
+    embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
-    embed.add_field(name="!dhelp card selected:",value=ordinal(Gnum)+" result for \""+searchterm+"\"", inline=False)
-    embed.add_field(name="Keywords:", value='```'+str(embed00.fields[0].value)+'```', inline=False)
-    embed.add_field(name="Description:", value=str(embed00.description), inline=False)
-    embed.set_thumbnail(url=embed00.thumbnail.url)
+    embed.set_footer(text=ordinal(Gnum)+" result for \""+searchterm+"\"")
+    
   return embed
