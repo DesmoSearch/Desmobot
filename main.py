@@ -88,7 +88,8 @@ async def on_message(message):
   x05=pattern05.finditer(message.content)
   pattern06=re.compile(r'!dhelp ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
   x06=pattern06.finditer(message.content)
-  if message.author == client.user or message.author.bot:
+
+  if message.author == client.user or message.author.bot or message.guild is None:
     return
   elif len(list(x))==1:
     await onmessage1(message)
