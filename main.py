@@ -62,6 +62,16 @@ async def on_raw_reaction_add(payload):
     if emoji.name=='❌':
       await Mid0.delete()
       await message0.add_reaction('❌')
+  elif emoji.name=='🔬':
+    patternhh=re.compile(r"https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
+    xhh=patternhh.finditer(message0.content)
+    if len(list(xhh))>=1:
+      thehashhh=[ii.group(1) for ii in patternhh.finditer(message0.content)][0]
+      message0.content='!/'+thehashhh
+      message0.author=user
+      await DiffStuff(message0,True)
+      
+    
 
 
 @client.event

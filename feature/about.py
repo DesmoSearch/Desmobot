@@ -14,6 +14,7 @@ async def expandG(emoji,user,messageid,channelid,channel0,message0):
   pattern002=re.compile(r"https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
   x02=pattern002.finditer(message0.content)
   if len(list(x02))>0:
+    message0.author=user
     thehash01=[ii.group(1) for ii in pattern002.finditer(message0.content)][0]
     #
     msg2 = await message0.reply(embed=await getready(message0),mention_author=False)

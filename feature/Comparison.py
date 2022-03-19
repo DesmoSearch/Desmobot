@@ -6,9 +6,13 @@ import nextcord
 import math
 import asyncio
 pattern04=re.compile(r"!\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))(?: vs \/((?:[a-z0-9]{20})|(?:[a-z0-9]{10})))?")
-async def DiffStuff(message):
+async def DiffStuff(message,reactmode=False):
   #
-  msg4 = await message.channel.send(embed=await getready(message))
+  msg4=''
+  if reactmode:
+    msg4 = await message.reply(embed=await getready(message),mention_author=False)
+  else:
+    msg4 = await message.channel.send(embed=await getready(message))
   RecMsg = await record(message)
   #
   async with message.channel.typing():
