@@ -1,4 +1,5 @@
-from setup import getready, client, record, checkIfDuplicates
+from setup import getready, client, record
+from Variables import checkIfDuplicates
 import asyncio
 import re
 import json

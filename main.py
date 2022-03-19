@@ -8,6 +8,7 @@ from feature.DMS import DMrec, DMreact
 from feature.Graph import GraphStuff
 from feature.Comparison import DiffStuff
 from feature.about import onmessage1,onmessage2,expandG
+from feature.help import Dhelp, DhelpStuff
 
 print(db.keys())
 token = os.environ.get("DISCORD_BOT_SECRET")
@@ -73,6 +74,10 @@ async def on_message(message):
   x03=pattern03.finditer(message.content)
   pattern04=re.compile(r"!\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))(?: vs \/((?:[a-z0-9]{20})|(?:[a-z0-9]{10})))?")
   x04=pattern04.finditer(message.content)
+  pattern05=re.compile(r'!dhelp\n\[([,A-Za-z0-9 ]+)\](?:\?image=(.+))?\n([\s\S]+)')
+  x05=pattern05.finditer(message.content)
+  pattern06=re.compile(r'!dhelp ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
+  x06=pattern06.finditer(message.content)
   if message.author == client.user or message.author.bot:
     return
   elif len(list(x))==1:
@@ -84,7 +89,7 @@ async def on_message(message):
     await getready(message)
     RecMsg = await record(message)
     #
-    helpembed=nextcord.Embed(title="Commands",description="!dhelp, !desmos, ![+desmoslink]")
+    helpembed=nextcord.Embed(title="Commands",description="!dhelp, !desmos, ![+desmoslink], !/graph hash vs /graph hash")
     helpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     await message.channel.send(embed=helpembed,content='')
   elif len(list(x03))==1:
@@ -95,6 +100,10 @@ async def on_message(message):
     await message.channel.send('https://cdn.discordapp.com/attachments/709918138342572093/948783164518699078/bernie.png')
   elif len(list(x04))==1:
     await DiffStuff(message)
+  elif len(list(x05))==1 and message.content.startswith("!dhelp"):
+    await Dhelp(message)
+  elif len(list(x06))==1:
+    await DhelpStuff(message)
 
 @client.listen()
 async def on_message(msg):

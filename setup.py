@@ -8,12 +8,15 @@ usersG=[]
 intents = nextcord.Intents.all()
 client = commands.Bot(command_prefix="_",intents=intents)
 setup = True
+#
+dhelplist=[]
 
 async def Onready():
   await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} searches done!"))
   global setup
   if setup:
     await setuploading()
+    await setupDhelp()
     setup=False
 
 async def loadinggif(msg0):
@@ -54,10 +57,16 @@ async def record(msg0,msg1=''):
       msg1=msg01
     return await msg1.reply(content='content: '+str(msg0.content)+'\nauthor: '+str(msg0.author)+';'+str(msg0.author.id)+'\nid: '+str(msg0.channel.id)+';'+str(msg0.id),embed=(msg0.embeds[0]) if msg0.embeds else None,files=[await f.to_file() for f in msg0.attachments])
 
-def checkIfDuplicates(listOfElems):
-    ''' Check if given list contains any duplicates '''
-    listOfElems=list(filter((None).__ne__, listOfElems))
-    if len(listOfElems) == len(set(listOfElems)):
-        return False
-    else:
-        return True
+import json
+async def setupDhelp():
+  channel=client.get_channel(954531626434560048)
+  async for msgg in channel.history(limit=10000):
+    if msgg.reactions[0].emoji=='✅' and msgg.reactions[0].count>1:
+      dhelplist.append((json.loads(msgg.embeds[0].fields[0].value.replace('\'', '\"')),msgg.embeds[0]))
+async def dhelplistupdate():
+  global dhelplist
+  dhelplist=[]
+  channel=client.get_channel(954531626434560048)
+  async for msgg in channel.history(limit=10000):
+    if msgg.reactions[0].emoji=='✅' and msgg.reactions[0].count>1:
+      dhelplist.append((json.loads(msgg.embeds[0].fields[0].value.replace('\'', '\"')),msgg.embeds[0]))

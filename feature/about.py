@@ -5,8 +5,8 @@ import asyncio
 import re
 import maya
 from getinfo import getinfo
-from setup import Onready, getready, client, record, checkIfDuplicates
-from Variables import objowner,GraphsList,thetitles,ParentGraphsList,noofresults
+from setup import Onready, getready, client, record
+from Variables import objowner,GraphsList,thetitles,ParentGraphsList,noofresults, checkIfDuplicates
 
 pattern=re.compile(r"!desmos ([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?")
 pattern02=re.compile(r"!<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?")
@@ -439,8 +439,6 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
   embed.add_field(name="Des[sub]Tree", value=gtree, inline=False)
   
   return embed
-
-
 
 ############
 def createembed(Gnum,num,result,max_page,message):

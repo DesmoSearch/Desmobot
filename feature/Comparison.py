@@ -41,7 +41,7 @@ async def DiffStuff(message):
   
     if len(searchresult4) == 0 and Gnum4 == 1:
         pass
-    elif not (Gnum4==len(searchresult4)):
+    elif not (Gnum4>=len(searchresult4)):
         reactmoji4.append('🔽')
     elif Gnum4 == len(searchresult4) :
         reactmoji4.append('🔼')
