@@ -203,7 +203,8 @@ def dhelpembed(Gnum,num,result,max_page,message):
   if Gnum!=-1:
     embed00=result[Gnum-1][1]
     ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
-    embed.set_footer(text="Page: "+str(num)+"/"+str(max_page)+'\n'+ordinal(Gnum)+" result for \""+searchterm+"\".")
-    embed.add_field(name="!dhelp card selected:", value=str(embed00.description), inline=False)
-    embed.add_field(name="Keywords", value=str(embed00.fields[0].value), inline=False)
+    embed.add_field(name="!dhelp card selected:",value=ordinal(Gnum)+" result for \""+searchterm+"\"", inline=False)
+    embed.add_field(name="Keywords:", value='```'+str(embed00.fields[0].value)+'```', inline=False)
+    embed.add_field(name="Description:", value=str(embed00.description), inline=False)
+    embed.set_thumbnail(url=embed00.thumbnail.url)
   return embed
