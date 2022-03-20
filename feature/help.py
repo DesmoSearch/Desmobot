@@ -15,7 +15,7 @@ async def Dhelp(message):
   keywords=re.split(' ?, ?',[ii.group(1) for ii in pattern05.finditer(message.content)][0])
   Description=[ii.group(3) for ii in pattern05.finditer(message.content)][0]
   Image=[ii.group(2) for ii in pattern05.finditer(message.content)][0]
-  if len(Description)<1000:
+  if len(Description)<4000:
     dhelpembed=nextcord.Embed(title="!dhelp",description=Description)
     dhelpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     dhelpembed.add_field(name="Keywords", value=str(keywords), inline=False)
