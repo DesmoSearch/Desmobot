@@ -8,7 +8,7 @@ from feature.DMS import DMrec, DMreact
 from feature.Graph import GraphStuff
 from feature.Comparison import DiffStuff
 from feature.about import onmessage1,onmessage2,expandG
-from feature.help import Dhelp, DhelpStuff
+from feature.help import Dhelp, DhelpStuff, card
 
 print(db.keys())
 token = os.environ.get("DISCORD_BOT_SECRET")
@@ -88,6 +88,8 @@ async def on_message(message):
   x05=pattern05.finditer(message.content)
   pattern06=re.compile(r'!dhelp ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
   x06=pattern06.finditer(message.content)
+  pattern07=re.compile(r'card!([0-9]+)')
+  x07=pattern07.finditer(message.content)
 
   if message.author == client.user or message.author.bot or message.guild is None:
     return
@@ -115,6 +117,8 @@ async def on_message(message):
     await Dhelp(message)
   elif len(list(x06))==1:
     await DhelpStuff(message)
+  elif len(list(x07))==1:
+    await card(message,[ii.group(1) for ii in pattern07.finditer(message.content)][0])
 
 @client.listen()
 async def on_message(msg):

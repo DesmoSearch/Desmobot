@@ -33,21 +33,34 @@ async def Dhelp(message):
 
 async def Dhelpreact(emoji,user,message,client,addStatus):
   if user.id==686012491607572515 and message.channel.id==Dhelpchannel:
+    firstline=message.content.split('\n')[0]
+    approve=client.get_channel(954961640183455804)
     if ';' in message.content:
-      channel0 = client.get_channel(int(message.content.split(';')[0]))
-      message0 = await channel0.fetch_message(int(message.content.split(';')[1]))
+      channel0 = client.get_channel(int(firstline.split(';')[0]))
+      message0 = await channel0.fetch_message(int(firstline.split(';')[1]))
       if addStatus:
         await message0.add_reaction(emoji)
       else:
         await message0.remove_reaction(emoji,client.user)
     elif '|' in message.content:
-      msgIDget=message.content.split('|')[1]
-      user00 = await client.fetch_user(message.content.split('|')[0])
+      msgIDget=firstline.split('|')[1]
+      user00 = await client.fetch_user(firstline.split('|')[0])
       message0 = await user00.fetch_message(msgIDget)
       if addStatus:
         await message0.add_reaction(emoji)
       else:
         await message0.remove_reaction(emoji,client.user)
+    if emoji.name=='✅' and ('|' in message.content or ';' in message.content):
+      if addStatus:
+        appmsg=await approve.send(embed=message.embeds[0])
+        await appmsg.edit(content='card!'+str(appmsg.id))
+        await message.edit(content=message.content+'\n'+appmsg.jump_url)
+      else:
+        link=message.content.split('\n')[1]
+        delmsg=await approve.fetch_message(int(link.split('/')[-1]))
+        await delmsg.delete()
+        await message.edit(content=firstline)
+        
     await dhelplistupdate()
 
 @client.listen()
@@ -221,6 +234,18 @@ def dhelpembed(Gnum,num,result,max_page,message,infocard=False):
   if Gnum!=-1 and infocard:
     embed=result[Gnum-1][1]
     ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
+    embed.title=result[Gnum-1][2]
     embed.set_footer(text=ordinal(Gnum)+" result for \""+searchterm+"\"")
-    
   return embed
+
+async def card(message,id):
+  #
+  await getready(message)
+  RecMsg = await record(message)
+  #
+  approve=client.get_channel(954961640183455804)
+  msg=await approve.fetch_message(int(id))
+  embed=msg.embeds[0]
+  embed.title=msg.content
+  msgg0=await message.channel.send(embed=embed)
+  RecMsg = await record(msgg0,RecMsg)
