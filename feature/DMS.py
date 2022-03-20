@@ -28,8 +28,7 @@ async def Wholesome(x,webhook,channelsendto ):
     des=str(x.author.id)+'|'+str(x.id)
   else:
     des=str(x.channel.id)+';'+str(x.id)
-  xy=await channelsendto.send('<@686012491607572515>')
-  await xy.delete()
+
   return await webhook.send(content=x.content, username=str(x.author), avatar_url=x.author.display_avatar.url,embed=nextcord.Embed(description=des),files=[await f.to_file() for f in x.attachments],wait=True)
 
 async def DMrec(msg,client):
@@ -69,6 +68,10 @@ async def DMrec(msg,client):
         else:
           messagereplyto = await user00.fetch_message(msgIDget)
           await messagereplyto.reply(Encode(msg)+msg.content,files=[await f.to_file() for f in msg.attachments])
+    else:
+      #to directly dm, message or reply in a channel
+      await custome314(msg,client)
+        
 ##################
 
 async def DMreact(emoji,user,message,client,addStatus):
@@ -96,3 +99,20 @@ async def DMreact(emoji,user,message,client,addStatus):
       message0 = await channel.fetch_message(Check)
       if addStatus:
         await message0.add_reaction(emoji)
+#############
+async def custome314(msg,client):
+  #to directly dm, message or reply in a channel
+  if msg.content[:2]=='!;' and msg.author.id==686012491607572515:
+    thecontent=msg.content.split('!;')
+    if len(thecontent)==3:
+      dmuser=await client.fetch_user(thecontent[1])
+      await dmuser.send(content=Encode(msg)+thecontent[2])
+  elif msg.content[:2]==';!' and msg.author.id==686012491607572515:
+    thecontent=msg.content.split(';!')
+    if len(thecontent)==3:
+      msgchannel=client.get_channel(int(thecontent[1]))
+      await msgchannel.send(content=Encode(msg)+thecontent[2])
+    elif len(thecontent)==4:
+      msgchannel=client.get_channel(int(thecontent[1]))
+      msgtoreply=await msgchannel.fetch_message(int(thecontent[2]))
+      await msgtoreply.reply(content=Encode(msg)+thecontent[3])
