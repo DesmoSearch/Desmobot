@@ -96,7 +96,11 @@ async def DhelpStuff(message):
       searchterm=searchterm.lower()
     searchtermpart = lambda data00 : data00 if slashcheckterm else data00.lower()
     searchterm0 = searchtermpart(searchterm)
-    searchresult4=[tup for tup in dhelplist if any([bool(re.search(searchterm0, searchtermpart(str(ele)))) for ele in tup[0]])]
+
+    searchterm0 = [searchterm0] if slashcheckterm else re.split(' +',searchterm0)
+    searchresult4=[tup for tup in dhelplist if any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0] for searchword in searchterm0])]
+    sortsearchresult4=([-sum([any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0]]) for searchword in searchterm0]) for tup in searchresult4])
+    searchresult4= [x for _,x in sorted(zip(sortsearchresult4,searchresult4))]
 
   max_page4=math.ceil(len(searchresult4)/noofresults)
   first_run4 = True
@@ -211,9 +215,11 @@ def dhelpembed(Gnum,num,result,max_page,message,infocard=False):
     embed = nextcord.Embed(color=0x12793e, title=str(len(result))+" results for \""+searchterm+"\"",description=thedescription)
     embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     embed.set_footer(text="Page: "+str(num)+"/"+str(max_page))
+    if Gnum!=-1:
+      embed00=result[Gnum-1][1]
+      embed.add_field(name="Keywords", value='```'+str(embed00.fields[0].value)+'```\n🔎 to expand a card', inline=False)
   if Gnum!=-1 and infocard:
     embed=result[Gnum-1][1]
-    embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
     embed.set_footer(text=ordinal(Gnum)+" result for \""+searchterm+"\"")
     
