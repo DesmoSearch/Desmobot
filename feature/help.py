@@ -2,7 +2,7 @@ import nextcord
 import re
 import math
 import asyncio
-from setup import getready, client, record, dhelplistupdate
+from setup import getready, client, record, setupDhelp
 from Variables import noofresults
 pattern05=re.compile(r'!dhelp\n\[([,A-Za-z0-9 ]+)\](?:\?image=(.+))?\n([\s\S]+)')
 Dhelpchannel=954531626434560048
@@ -61,7 +61,7 @@ async def Dhelpreact(emoji,user,message,client,addStatus):
         await delmsg.delete()
         await message.edit(content=firstline)
         
-    await dhelplistupdate()
+    await setupDhelp()
 
 @client.listen()
 async def on_raw_reaction_add(payload):

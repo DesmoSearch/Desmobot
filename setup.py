@@ -59,10 +59,6 @@ async def record(msg0,msg1=''):
 
 import json
 async def setupDhelp():
-  channel=client.get_channel(954961640183455804)
-  async for msgg in channel.history(limit=10000):
-    dhelplist.append((json.loads(msgg.embeds[0].fields[0].value.replace('\'', '\"')),msgg.embeds[0],msgg.content))
-async def dhelplistupdate():
   global dhelplist
   dhelplist=[]
   channel=client.get_channel(954961640183455804)
