@@ -10,6 +10,7 @@ client = commands.Bot(command_prefix="_",intents=intents)
 setup = True
 #
 dhelplist=[]
+dpfplist=[]
 
 async def Onready():
   await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} searches done!"))
@@ -17,6 +18,7 @@ async def Onready():
   if setup:
     await setuploading()
     await setupDhelp()
+    await setupDpfp()
     setup=False
 
 async def loadinggif(msg0):
@@ -64,3 +66,10 @@ async def setupDhelp():
   channel=client.get_channel(954961640183455804)
   async for msgg in channel.history(limit=10000):
     dhelplist.append((json.loads(msgg.embeds[0].fields[0].value.replace('\'', '\"')),msgg.embeds[0],msgg.content))
+
+async def setupDpfp():
+  global dpfplist
+  dpfplist=[]
+  channel=client.get_channel(950550255789830164)
+  async for msgg in channel.history(limit=10000):
+    dpfplist.append((msgg.id,int(msgg.embeds[0].footer.text),msgg.embeds[0].title))

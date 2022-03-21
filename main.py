@@ -9,6 +9,7 @@ from feature.Graph import GraphStuff
 from feature.Comparison import DiffStuff
 from feature.about import onmessage1,onmessage2,expandG
 from feature.help import Dhelp, DhelpStuff, card
+from feature.profile import Dprofile, seeprofile
 
 print(db.keys())
 token = os.environ.get("DISCORD_BOT_SECRET")
@@ -90,6 +91,10 @@ async def on_message(message):
   x06=pattern06.finditer(message.content)
   pattern07=re.compile(r'card!([0-9]+)')
   x07=pattern07.finditer(message.content)
+  pattern08=re.compile(r'!profile +(?:"([A-Za-z0-9]+)"(?:\?image=(.+))?)?(?:\n([\s\S]*))?')
+  x08=pattern08.finditer(message.content)
+  pattern09=re.compile(r'!profile +([0-9]+|<@![0-9]+>)')
+  x09=pattern09.finditer(message.content)
 
   if message.author == client.user or message.author.bot or message.guild is None:
     return
@@ -119,6 +124,10 @@ async def on_message(message):
     await DhelpStuff(message)
   elif len(list(x07))==1:
     await card(message,[ii.group(1) for ii in pattern07.finditer(message.content)][0])
+  elif len(list(x09))==1 and message.content.startswith("!profile"):
+    await seeprofile(message)
+  elif len(list(x08))==1 and message.content.startswith("!profile"):
+    await Dprofile(message)
 
 @client.listen()
 async def on_message(msg):
