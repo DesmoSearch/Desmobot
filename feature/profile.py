@@ -2,7 +2,7 @@ import nextcord
 import re
 import math
 import asyncio
-from setup import client,setupDpfp
+from setup import client,setupDpfp, getready, record
 pattern08=re.compile(r'!profile +(?:"([A-Za-z0-9]+)"(?:\?image=(.+))?)?(?:\n([\s\S]*))?')
 pattern09=re.compile(r'!profile +([0-9]+|<@![0-9]+>)')
 Dprofilechannel=950550255789830164
@@ -19,21 +19,84 @@ async def Dprofile(message):
     dpfpembed.set_footer(text=str(message.author.id))
     channel = client.get_channel(Dprofilechannel)
     await message.edit(suppress=True)
+    print(message.author)
     ifany=[i[0] for i in dpfplist if i[1]==(message.author.id)]
     if len(ifany)==1:
       msgdel=await channel.fetch_message(ifany[0])
       dpfpembed.add_field(name="Descoins", value=msgdel.embeds[0].fields[0].value, inline=False)
       await msgdel.delete()
     else:
-      dpfpembed.add_field(name="Descoins", value="300", inline=False)
-    message0=await channel.send(embed=dpfpembed) 
-    await message.channel.send(embed=dpfpembed)
+      dpfpembed.add_field(name="Descoins", value=str(300), inline=False)
+    await channel.send(embed=dpfpembed) 
+    sentmessage=await message.channel.send(embed=dpfpembed)
     await setupDpfp()
 
 async def seeprofile(message):
+  #
+  await getready(message)
+  RecMsg = await record(message)
+  #
   from setup import dpfplist
   channel = client.get_channel(Dprofilechannel)
   ifany=[i[0] for i in dpfplist if i[1]==int(re.sub('[<@!>]','',[ii.group(1) for ii in pattern09.finditer(message.content)][0]))]
   if len(ifany)==1:
     damsg=await channel.fetch_message(ifany[0])
-    await message.channel.send(embed=damsg.embeds[0])
+    output=damsg.embeds[0]
+    output.set_field_at(0,name='Descoins',value='```ansi\n[1;33m ⏣'+output.fields[0].value+'```',inline=False)
+    await message.channel.send(embed=output)
+
+pattern10=re.compile(r'!give +([0-9]+) +to +([0-9,<>!@ ]+)')
+async def give(message):
+  from setup import dpfplist
+  much=int([ii.group(1) for ii in pattern10.finditer(message.content)][0])
+  to=[ii.group(2) for ii in pattern10.finditer(message.content)][0].split(',')
+  ifany=[i[0] for i in dpfplist if i[1]==(message.author.id)]
+  channel = client.get_channel(Dprofilechannel)
+  
+  if len(ifany)==1:
+    giver=await channel.fetch_message(ifany[0])
+    amount=int(giver.embeds[0].fields[0].value)
+    if much*len(to)<amount or message.author.id==686012491607572515:
+      #
+      await getready(message)
+      RecMsg = await record(message)
+      #
+      for p in to:
+        p=re.sub('[<@!>]','',p)
+        try:
+          user=await client.fetch_user(p)
+          ifanyuser=[i[0] for i in dpfplist if i[1]==(user.id)]
+
+          if len(ifanyuser)==1:
+            await appendamount(message,ifanyuser[0],much)
+            await appendamount(message,ifany[0],-much)
+          else:
+            await defaultpfp(user,much)
+            await appendamount(message,ifany[0],-much)
+        except:
+          await message.reply("{} is an invalid user id".format(p))
+      await message.add_reaction('✅')
+    else:
+      await message.reply("You don't have enough descoins to !give")
+  else:
+    await message.reply("First create a profile using !profile and try again.")
+
+async def defaultpfp(user,much):
+  dpfpembed=nextcord.Embed(title=user.name,description='')
+  dpfpembed.set_author(name=str(user), icon_url=user.display_avatar.url)
+  dpfpembed.set_thumbnail(url=user.display_avatar.url)
+  dpfpembed.set_footer(text=str(user.id))
+  dpfpembed.add_field(name="Descoins", value=str(300+much), inline=False)
+  channel = client.get_channel(Dprofilechannel)
+  message0=await channel.send(embed=dpfpembed) 
+  await setupDpfp()
+
+async def appendamount(message,user000,amount):
+  channel = client.get_channel(Dprofilechannel)
+  if message.author.id==686012491607572515 and amount<0:
+    pass
+  else:
+    damsg0=await channel.fetch_message(user000)
+    daembed0=damsg0.embeds[0]
+    daembed0.set_field_at(0,name='Descoins',value=str(amount+int(daembed0.fields[0].value)),inline=False)
+    await damsg0.edit(embed=daembed0)
