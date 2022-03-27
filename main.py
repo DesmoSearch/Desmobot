@@ -10,6 +10,7 @@ from feature.Comparison import DiffStuff
 from feature.about import onmessage1,onmessage2,expandG
 from feature.help import Dhelp, DhelpStuff, card
 from feature.profile import Dprofile, seeprofile, give
+from feature.create import compiledesmython
 
 print(db.keys())
 token = os.environ.get("DISCORD_BOT_SECRET")
@@ -97,6 +98,8 @@ async def on_message(message):
   x09=pattern09.finditer(message.content)
   pattern10=re.compile(r'!give +([0-9]+) +to +([0-9,<>!@ ]+)')
   x10=pattern10.finditer(message.content)
+  pattern11=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)```')
+  x11=pattern11.finditer(message.content)
 
   if message.author == client.user or message.author.bot or message.guild is None:
     return
@@ -132,6 +135,9 @@ async def on_message(message):
     await Dprofile(message)
   elif len(list(x10))==1 and message.content.startswith("!give"):
     await give(message)
+  elif len(list(x11))==1 and message.content.startswith("!create"):
+    print('Createe')
+    await compiledesmython(message.content,message)
 
 @client.listen()
 async def on_message(msg):
