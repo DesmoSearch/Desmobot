@@ -154,7 +154,7 @@ async def compiledesmython(string,message):
   daGmsg = await message.reply(embed=await getready(message))
   RecMsg = await record(message)
   #
-  pattern=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)```')
+  pattern=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)\n?```')
   title=[ii.group(1) for ii in pattern.finditer(string)][0]
   hash=[ii.group(2) for ii in pattern.finditer(string)][0]
   hash=hash[1:] if hash is not None else hash

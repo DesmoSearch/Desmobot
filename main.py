@@ -98,7 +98,7 @@ async def on_message(message):
   x09=pattern09.finditer(message.content)
   pattern10=re.compile(r'!give +([0-9]+) +to +([0-9,<>!@ ]+)')
   x10=pattern10.finditer(message.content)
-  pattern11=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)```')
+  pattern11=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)\n?```')
   x11=pattern11.finditer(message.content)
 
   if message.author == client.user or message.author.bot or message.guild is None:
