@@ -2,39 +2,42 @@ import nextcord
 import re
 import math
 import asyncio
-from setup import getready, client, record, setupDhelp
+from setup import getready, client, record, setupDmodule
 from Variables import noofresults
-pattern05=re.compile(r'!dhelp\n\[([,A-Za-z0-9 ]+)\](?:\?image=(.+))?\n([\s\S]+)')
-Dhelpchannel=954531626434560048
+pattern05=re.compile(r'!module\n\[([,A-Za-z0-9 ]+)\]\n<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?&name=([A-Za-z0-9]+)\n([\s\S]+)')
+Dmodulechannel=958219332922515476
 
-async def Dhelp(message):
+async def Dmodule(message):
   #
   await getready(message)
   RecMsg = await record(message)
   #
   keywords=re.split(' *, *',[ii.group(1) for ii in pattern05.finditer(message.content)][0])
-  Description=[ii.group(3) for ii in pattern05.finditer(message.content)][0]
-  Image=[ii.group(2) for ii in pattern05.finditer(message.content)][0]
+  Description=[ii.group(4) for ii in pattern05.finditer(message.content)][0]
+  Name=[ii.group(3) for ii in pattern05.finditer(message.content)][0]
+  Graph=[ii.group(2) for ii in pattern05.finditer(message.content)][0]
   if len(Description)<4000:
-    dhelpembed=nextcord.Embed(title="!dhelp",description=Description)
-    dhelpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
-    dhelpembed.add_field(name="Keywords", value=str(keywords), inline=False)
-    dhelpembed.set_thumbnail(url=Image if Image is not None else '')
+    dmoduleembed=nextcord.Embed(title="!module",description=Description)
+    dmoduleembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
+    dmoduleembed.add_field(name="Desmodule", value='https://www.desmos.com/calculator/'+str(Graph), inline=False)
+    dmoduleembed.add_field(name="Module name", value=str(Name), inline=False)
+    dmoduleembed.add_field(name="Keywords", value=str(keywords), inline=False)
+    
     des=''
     if 'Direct Message' in str(message.channel):
       des=str(message.author.id)+'|'+str(message.id)
     else:
       des=str(message.channel.id)+';'+str(message.id)
-    channel = client.get_channel(Dhelpchannel)
-    message0=await channel.send(content=des,embed=dhelpembed)
+    channel = client.get_channel(Dmodulechannel)
+    message0=await channel.send(content=des,embed=dmoduleembed)
     await message.edit(suppress=True)
-    await message.channel.send(embed=dhelpembed)
+    await message.channel.send(embed=dmoduleembed)
     await message0.add_reaction('✅')
 
-async def Dhelpreact(emoji,user,message,client,addStatus):
-  if user.id==686012491607572515 and message.channel.id==Dhelpchannel:
+async def Dmodulereact(emoji,user,message,client,addStatus):
+  if user.id==686012491607572515 and message.channel.id==Dmodulechannel:
     firstline=message.content.split('\n')[0]
-    approve=client.get_channel(954961640183455804)
+    approve=client.get_channel(952361570317529140)
     if ';' in message.content:
       channel0 = client.get_channel(int(firstline.split(';')[0]))
       message0 = await channel0.fetch_message(int(firstline.split(';')[1]))
@@ -53,7 +56,7 @@ async def Dhelpreact(emoji,user,message,client,addStatus):
     if emoji.name=='✅' and ('|' in message.content or ';' in message.content):
       if addStatus:
         appmsg=await approve.send(embed=message.embeds[0])
-        await appmsg.edit(content='card!'+str(appmsg.id))
+        await appmsg.edit(content='desmodule!'+str(appmsg.id))
         await message.edit(content=message.content+'\n'+appmsg.jump_url)
       else:
         link=message.content.split('\n')[1]
@@ -61,7 +64,7 @@ async def Dhelpreact(emoji,user,message,client,addStatus):
         await delmsg.delete()
         await message.edit(content=firstline)
         
-    await setupDhelp()
+    await setupDmodule()
 
 @client.listen()
 async def on_raw_reaction_add(payload):
@@ -75,7 +78,7 @@ async def on_raw_reaction_add(payload):
     message0 = await user.fetch_message(messageid)
   else:
     message0 = await channel0.fetch_message(messageid)
-  await Dhelpreact(emoji,user,message0,client,True)
+  await Dmodulereact(emoji,user,message0,client,True)
 
 @client.listen()
 async def on_raw_reaction_remove(payload):
@@ -89,11 +92,11 @@ async def on_raw_reaction_remove(payload):
     message0 = await user.fetch_message(messageid)
   else:
     message0 = await channel0.fetch_message(messageid)
-  await Dhelpreact(emoji,user,message0,client,False)
+  await Dmodulereact(emoji,user,message0,client,False)
 
-async def DhelpStuff(message):
-  from setup import dhelplist
-  pattern06=re.compile(r'!dhelp ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
+async def DmoduleStuff(message):
+  from setup import dmodulelist
+  pattern06=re.compile(r'!module ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
   #
   msg4 = await message.channel.send(embed=await getready(message))
   RecMsg = await record(message)
@@ -111,7 +114,7 @@ async def DhelpStuff(message):
     searchterm0 = searchtermpart(searchterm)
 
     searchterm0 = [searchterm0] if slashcheckterm else re.split(' +',searchterm0)
-    searchresult4=[tup for tup in dhelplist if any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0] for searchword in searchterm0])]
+    searchresult4=[tup for tup in dmodulelist if any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0] for searchword in searchterm0])]
     sortsearchresult4=([-sum([any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0]]) for searchword in searchterm0]) for tup in searchresult4])
     searchresult4= [x for _,x in sorted(zip(sortsearchresult4,searchresult4))]
 
@@ -124,7 +127,7 @@ async def DhelpStuff(message):
   while True:
     if first_run4:
         first_run4 = False
-        msg4=await msg4.edit(embed=dhelpembed(-1,num4,searchresult4,max_page4,message))
+        msg4=await msg4.edit(embed=dmoduleembed(-1,num4,searchresult4,max_page4,message))
         RecMsg = await record(msg4,RecMsg)
   
     reactmoji4 = []
@@ -174,21 +177,21 @@ async def DhelpStuff(message):
         Gnum4 = (num4-1)*noofresults+1
         GnumDisplay = 0
         await msg4.clear_reactions()
-        msg4=await msg4.edit(embed=dhelpembed(-1,num4,searchresult4,max_page4,message))
+        msg4=await msg4.edit(embed=dmoduleembed(-1,num4,searchresult4,max_page4,message))
         RecMsg = await record(msg4,RecMsg)
     elif '⏩' in str(res4.emoji):
         num4 = num4 + 1
         Gnum4 = (num4-1)*noofresults+1
         GnumDisplay = 0
         await msg4.clear_reactions()
-        msg4=await msg4.edit(embed=dhelpembed(-1,num4,searchresult4,max_page4,message))
+        msg4=await msg4.edit(embed=dmoduleembed(-1,num4,searchresult4,max_page4,message))
         RecMsg = await record(msg4,RecMsg)
     elif '🔽' in str(res4.emoji):
         Gnum4  = Gnum4 if GnumDisplay==0 else Gnum4+1
         num4 = math.ceil(Gnum4/noofresults)
         GnumDisplay = 1
         await msg4.clear_reactions()
-        msg4=await msg4.edit(embed=dhelpembed(Gnum4,num4,searchresult4,max_page4,message))
+        msg4=await msg4.edit(embed=dmoduleembed(Gnum4,num4,searchresult4,max_page4,message))
         RecMsg = await record(msg4,RecMsg)
     elif '🔼' in str(res4.emoji):
         Gnum4  = Gnum4 if GnumDisplay==0 else Gnum4-1
@@ -199,13 +202,13 @@ async def DhelpStuff(message):
           Gnum4 = 1
           GnumDisplay = 0
         await msg4.clear_reactions()
-        msg4=await msg4.edit(embed=dhelpembed(Gnum4 if GnumDisplay == 1 else -1,num4,searchresult4,max_page4,message))
+        msg4=await msg4.edit(embed=dmoduleembed(Gnum4 if GnumDisplay == 1 else -1,num4,searchresult4,max_page4,message))
         RecMsg = await record(msg4,RecMsg)
     elif '🔎' in str(res4.emoji):
       infocard=1-infocard
       await msg4.clear_reactions()
       if infocard==0:
-        msg4=await msg4.edit(embed=dhelpembed(Gnum4 if GnumDisplay == 1 else -1,num4,searchresult4,max_page4,message))
+        msg4=await msg4.edit(embed=dmoduleembed(Gnum4 if GnumDisplay == 1 else -1,num4,searchresult4,max_page4,message))
         RecMsg = await record(msg4,RecMsg)
     elif '✅' in str(res4.emoji):
         return await msg4.clear_reactions()
@@ -213,24 +216,24 @@ async def DhelpStuff(message):
         await message.delete()
         return await msg4.delete()
     if infocard==1:
-      msg4=await msg4.edit(embed=dhelpembed(Gnum4,num4,searchresult4,max_page4,message,True))
+      msg4=await msg4.edit(embed=dmoduleembed(Gnum4,num4,searchresult4,max_page4,message,True))
       RecMsg = await record(msg4,RecMsg)
 
-def dhelpembed(Gnum,num,result,max_page,message,infocard=False):
+def dmoduleembed(Gnum,num,result,max_page,message,infocard=False):
   datahashes=result[noofresults*(num-1):noofresults*num+1]
   n1='\n'
   thedescription="".join(f'{"⇓⇓⇓"+n1+"> " if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. {" ".join(datahashes[i][1].description.split()[:10])} ...\n'for i in range(len(datahashes)))
   
-  pattern06=re.compile(r'!dhelp ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
+  pattern06=re.compile(r'!module ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
   searchterm=[ii2.group(1) for ii2 in pattern06.finditer(message.content)][0]
   embed=''
   if not infocard:
-    embed = nextcord.Embed(color=0x12793e, title=str(len(result))+" results for \""+searchterm+"\"",description=thedescription)
+    embed = nextcord.Embed(color=0x12793e, title=str(len(result))+" modules for \""+searchterm+"\"",description=thedescription)
     embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     embed.set_footer(text="Page: "+str(num)+"/"+str(max_page))
     if Gnum!=-1:
       embed00=result[Gnum-1][1]
-      embed.add_field(name="Keywords", value='```'+str(embed00.fields[0].value)+'```\n🔎 to expand a card', inline=False)
+      embed.add_field(name="Keywords", value='```'+str(embed00.fields[2].value)+'```\n🔎 to expand a card', inline=False)
   if Gnum!=-1 and infocard:
     embed=result[Gnum-1][1]
     ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
@@ -238,12 +241,12 @@ def dhelpembed(Gnum,num,result,max_page,message,infocard=False):
     embed.set_footer(text=ordinal(Gnum)+" result for \""+searchterm+"\"")
   return embed
 
-async def card(message,id):
+async def desmodule(message,id):
   #
   await getready(message)
   RecMsg = await record(message)
   #
-  approve=client.get_channel(954961640183455804)
+  approve=client.get_channel(952361570317529140)
   msg=await approve.fetch_message(int(id))
   embed=msg.embeds[0]
   embed.title=msg.content

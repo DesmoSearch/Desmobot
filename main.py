@@ -11,6 +11,7 @@ from feature.about import onmessage1,onmessage2,expandG
 from feature.help import Dhelp, DhelpStuff, card
 from feature.profile import Dprofile, seeprofile, give
 from feature.create import compiledesmython
+from feature.module import Dmodule, DmoduleStuff, desmodule
 
 print(db.keys())
 token = os.environ.get("DISCORD_BOT_SECRET")
@@ -100,6 +101,13 @@ async def on_message(message):
   x10=pattern10.finditer(message.content)
   pattern11=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)\n?```')
   x11=pattern11.finditer(message.content)
+  #
+  mpattern05=re.compile(r'!module\n\[([,A-Za-z0-9 ]+)\]\n<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?&name=([A-Za-z0-9]+)\n([\s\S]+)')
+  mx05=mpattern05.finditer(message.content)
+  mpattern06=re.compile(r'!module ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
+  mx06=mpattern06.finditer(message.content)
+  mpattern07=re.compile(r'desmodule!([0-9]+)')
+  mx07=mpattern07.finditer(message.content)
 
   if message.author == client.user or message.author.bot or message.guild is None:
     return
@@ -138,6 +146,13 @@ async def on_message(message):
   elif len(list(x11))==1 and message.content.startswith("!create"):
     print('Createe')
     await compiledesmython(message.content,message)
+    ###
+  elif len(list(mx05))==1 and message.content.startswith("!module"):
+    await Dmodule(message)
+  elif len(list(mx06))==1:
+    await DmoduleStuff(message)
+  elif len(list(mx07))==1:
+    await desmodule(message,[ii.group(1) for ii in mpattern07.finditer(message.content)][0])
 
 @client.listen()
 async def on_message(msg):

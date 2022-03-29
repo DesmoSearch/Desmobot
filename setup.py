@@ -11,6 +11,7 @@ setup = True
 #
 dhelplist=[]
 dpfplist=[]
+dmodulelist=[]
 
 async def Onready():
   await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} searches done!"))
@@ -73,3 +74,10 @@ async def setupDpfp():
   channel=client.get_channel(950550255789830164)
   async for msgg in channel.history(limit=10000):
     dpfplist.append((msgg.id,int(msgg.embeds[0].footer.text),msgg.embeds[0].title))
+
+async def setupDmodule():
+  global dmodulelist
+  dmodulelist=[]
+  channel=client.get_channel(952361570317529140)
+  async for msgg in channel.history(limit=10000):
+    dmodulelist.append((json.loads(msgg.embeds[0].fields[2].value.replace('\'', '\"')),msgg.embeds[0],msgg.content,str(msgg.embeds[0].fields[1].value)))
