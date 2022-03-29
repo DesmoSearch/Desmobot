@@ -20,6 +20,7 @@ async def Onready():
     await setuploading()
     await setupDhelp()
     await setupDpfp()
+    await setupDmodule()
     setup=False
 
 async def loadinggif(msg0):
@@ -80,4 +81,6 @@ async def setupDmodule():
   dmodulelist=[]
   channel=client.get_channel(952361570317529140)
   async for msgg in channel.history(limit=10000):
-    dmodulelist.append((json.loads(msgg.embeds[0].fields[2].value.replace('\'', '\"')),msgg.embeds[0],msgg.content,str(msgg.embeds[0].fields[1].value)))
+    userid=int(msgg.embeds[0].footer.text)
+    modname=str([ele[2] for ele in dpfplist if ele[1]==userid][0])+'.'+str(msgg.embeds[0].fields[1].value)
+    dmodulelist.append((json.loads(msgg.embeds[0].fields[2].value.replace('\'', '\"')),msgg.embeds[0],msgg.content,modname,userid))

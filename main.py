@@ -93,7 +93,7 @@ async def on_message(message):
   x06=pattern06.finditer(message.content)
   pattern07=re.compile(r'card!([0-9]+)')
   x07=pattern07.finditer(message.content)
-  pattern08=re.compile(r'!profile +(?:"([A-Za-z0-9]+)"(?:\?image=(.+))?)?(?:\n([\s\S]*))?')
+  pattern08=re.compile(r'!profile +"([A-Za-z0-9]+)"(?:\?image=(.+))?(?:\n([\s\S]*))?')
   x08=pattern08.finditer(message.content)
   pattern09=re.compile(r'!profile +([0-9]+|<@![0-9]+>)')
   x09=pattern09.finditer(message.content)
@@ -102,7 +102,7 @@ async def on_message(message):
   pattern11=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)\n?```')
   x11=pattern11.finditer(message.content)
   #
-  mpattern05=re.compile(r'!module\n\[([,A-Za-z0-9 ]+)\]\n<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?&name=([A-Za-z0-9]+)\n([\s\S]+)')
+  mpattern05=re.compile(r'!module +"([A-Za-z0-9]+)"\n\[([,A-Za-z0-9 ]+)\]\n<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?\n([\s\S]+)')
   mx05=mpattern05.finditer(message.content)
   mpattern06=re.compile(r'!module ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
   mx06=mpattern06.finditer(message.content)

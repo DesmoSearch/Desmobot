@@ -4,7 +4,7 @@ import math
 import asyncio
 from setup import getready, client, record, setupDmodule
 from Variables import noofresults
-pattern05=re.compile(r'!module\n\[([,A-Za-z0-9 ]+)\]\n<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?&name=([A-Za-z0-9]+)\n([\s\S]+)')
+pattern05=re.compile(r'!module +"([A-Za-z0-9]+)"\n\[([,A-Za-z0-9 ]+)\]\n<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?\n([\s\S]+)')
 Dmodulechannel=958219332922515476
 
 async def Dmodule(message):
@@ -12,16 +12,17 @@ async def Dmodule(message):
   await getready(message)
   RecMsg = await record(message)
   #
-  keywords=re.split(' *, *',[ii.group(1) for ii in pattern05.finditer(message.content)][0])
+  keywords=re.split(' *, *',[ii.group(2) for ii in pattern05.finditer(message.content)][0])
   Description=[ii.group(4) for ii in pattern05.finditer(message.content)][0]
-  Name=[ii.group(3) for ii in pattern05.finditer(message.content)][0]
-  Graph=[ii.group(2) for ii in pattern05.finditer(message.content)][0]
+  Name=[ii.group(1) for ii in pattern05.finditer(message.content)][0]
+  Graph=[ii.group(3) for ii in pattern05.finditer(message.content)][0]
   if len(Description)<4000:
     dmoduleembed=nextcord.Embed(title="!module",description=Description)
     dmoduleembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     dmoduleembed.add_field(name="Desmodule", value='https://www.desmos.com/calculator/'+str(Graph), inline=False)
     dmoduleembed.add_field(name="Module name", value=str(Name), inline=False)
     dmoduleembed.add_field(name="Keywords", value=str(keywords), inline=False)
+    dmoduleembed.set_footer(text=str(message.author.id))
     
     des=''
     if 'Direct Message' in str(message.channel):
@@ -114,8 +115,8 @@ async def DmoduleStuff(message):
     searchterm0 = searchtermpart(searchterm)
 
     searchterm0 = [searchterm0] if slashcheckterm else re.split(' +',searchterm0)
-    searchresult4=[tup for tup in dmodulelist if any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0] for searchword in searchterm0])]
-    sortsearchresult4=([-sum([any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0]]) for searchword in searchterm0]) for tup in searchresult4])
+    searchresult4=[tup for tup in dmodulelist if any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0]+[tup[3]] for searchword in searchterm0])]
+    sortsearchresult4=([-sum([any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0]+[tup[3]]]) for searchword in searchterm0]) for tup in searchresult4])
     searchresult4= [x for _,x in sorted(zip(sortsearchresult4,searchresult4))]
 
   max_page4=math.ceil(len(searchresult4)/noofresults)
@@ -222,7 +223,7 @@ async def DmoduleStuff(message):
 def dmoduleembed(Gnum,num,result,max_page,message,infocard=False):
   datahashes=result[noofresults*(num-1):noofresults*num+1]
   n1='\n'
-  thedescription="".join(f'{"⇓⇓⇓"+n1+"> " if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. {" ".join(datahashes[i][1].description.split()[:10])} ...\n'for i in range(len(datahashes)))
+  thedescription="".join(f'{"⇓⇓⇓"+n1+"> " if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. **{datahashes[i][3]}**:  {" ".join(datahashes[i][1].description.split()[:10])} ...\n'for i in range(len(datahashes)))
   
   pattern06=re.compile(r'!module ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
   searchterm=[ii2.group(1) for ii2 in pattern06.finditer(message.content)][0]
@@ -238,10 +239,14 @@ def dmoduleembed(Gnum,num,result,max_page,message,infocard=False):
     embed=result[Gnum-1][1]
     ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
     embed.title=result[Gnum-1][2]
+    #
+    embed.set_field_at(1,name='Module name',value=result[Gnum-1][3],inline=False)
+    #
     embed.set_footer(text=ordinal(Gnum)+" result for \""+searchterm+"\"")
   return embed
 
 async def desmodule(message,id):
+  from setup import dpfplist
   #
   await getready(message)
   RecMsg = await record(message)
@@ -250,5 +255,7 @@ async def desmodule(message,id):
   msg=await approve.fetch_message(int(id))
   embed=msg.embeds[0]
   embed.title=msg.content
+  modname=str([ele[2] for ele in dpfplist if ele[1]==int(embed.footer.text)][0])+'.'+str(embed.fields[1].value)
+  embed.set_field_at(1,name='Module name',value=modname,inline=False)
   msgg0=await message.channel.send(embed=embed)
   RecMsg = await record(msgg0,RecMsg)
