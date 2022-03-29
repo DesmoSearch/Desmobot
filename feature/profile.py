@@ -42,6 +42,8 @@ async def seeprofile(message):
   if len(ifany)==1:
     damsg=await channel.fetch_message(ifany[0])
     output=damsg.embeds[0]
+    THEuser = await client.fetch_user(str(re.sub('[<@!>]','',[ii.group(1) for ii in pattern09.finditer(message.content)][0])))
+    output.set_author(name=str(THEuser), icon_url=THEuser.display_avatar.url)
     output.set_field_at(0,name='Descoins',value='```ansi\n[1;33m ⏣'+output.fields[0].value+'```',inline=False)
     await message.channel.send(embed=output)
 
