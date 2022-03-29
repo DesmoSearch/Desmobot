@@ -8,32 +8,40 @@ pattern05=re.compile(r'!module +"([A-Za-z0-9]+)"\n\[([,A-Za-z0-9 ]+)\]\n<?https:
 Dmodulechannel=958219332922515476
 
 async def Dmodule(message):
-  #
-  await getready(message)
-  RecMsg = await record(message)
-  #
-  keywords=re.split(' *, *',[ii.group(2) for ii in pattern05.finditer(message.content)][0])
-  Description=[ii.group(4) for ii in pattern05.finditer(message.content)][0]
-  Name=[ii.group(1) for ii in pattern05.finditer(message.content)][0]
-  Graph=[ii.group(3) for ii in pattern05.finditer(message.content)][0]
-  if len(Description)<4000:
-    dmoduleembed=nextcord.Embed(title="!module",description=Description)
-    dmoduleembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
-    dmoduleembed.add_field(name="Desmodule", value='https://www.desmos.com/calculator/'+str(Graph), inline=False)
-    dmoduleembed.add_field(name="Module name", value=str(Name), inline=False)
-    dmoduleembed.add_field(name="Keywords", value=str(keywords), inline=False)
-    dmoduleembed.set_footer(text=str(message.author.id))
+  from setup import dpfplist, dmodulelist
+  nickname=[ele[2] for ele in dpfplist if ele[1]==message.author.id]
+  if re.fullmatch('[A-Za-z0-9]+', str(nickname[0])) if 0<len(nickname) else False:
+    #
+    await getready(message)
+    RecMsg = await record(message)
+    #
+    keywords=re.split(' *, *',[ii.group(2) for ii in pattern05.finditer(message.content)][0])
+    Description=[ii.group(4) for ii in pattern05.finditer(message.content)][0]
+    Name=[ii.group(1) for ii in pattern05.finditer(message.content)][0]
+    Graph=[ii.group(3) for ii in pattern05.finditer(message.content)][0]
     
-    des=''
-    if 'Direct Message' in str(message.channel):
-      des=str(message.author.id)+'|'+str(message.id)
-    else:
-      des=str(message.channel.id)+';'+str(message.id)
-    channel = client.get_channel(Dmodulechannel)
-    message0=await channel.send(content=des,embed=dmoduleembed)
-    await message.edit(suppress=True)
-    await message.channel.send(embed=dmoduleembed)
-    await message0.add_reaction('✅')
+    if len(Description)<4000 and str(Name) not in [(ele[3])[ele[3].index('.')+1:] for ele in dmodulelist if ele[4]==message.author.id]:
+      dmoduleembed=nextcord.Embed(title="!module",description=Description)
+      dmoduleembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
+      dmoduleembed.add_field(name="Desmodule", value='https://www.desmos.com/calculator/'+str(Graph), inline=False)
+      dmoduleembed.add_field(name="Module name", value=str(Name), inline=False)
+      dmoduleembed.add_field(name="Keywords", value=str(keywords), inline=False)
+      dmoduleembed.set_footer(text=str(message.author.id))
+      
+      des=''
+      if 'Direct Message' in str(message.channel):
+        des=str(message.author.id)+'|'+str(message.id)
+      else:
+        des=str(message.channel.id)+';'+str(message.id)
+      channel = client.get_channel(Dmodulechannel)
+      message0=await channel.send(content=des,embed=dmoduleembed)
+      await message.edit(suppress=True)
+      await message.channel.send(embed=dmoduleembed)
+      await message0.add_reaction('✅')
+    elif str(Name) in [(ele[3])[ele[3].index('.')+1:] for ele in dmodulelist if ele[4]==message.author.id]:
+      await message.reply(str(nickname[0])+'.'+str(Name)+" module already exists. Try a unique name.")
+  else:
+    await message.reply("First create a profile using !profile and try again.")
 
 async def Dmodulereact(emoji,user,message,client,addStatus):
   if user.id==686012491607572515 and message.channel.id==Dmodulechannel:

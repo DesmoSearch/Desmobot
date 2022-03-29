@@ -12,24 +12,29 @@ async def Dprofile(message):
   Description=[ii.group(3) for ii in pattern08.finditer(message.content)][0]
   Image=[ii.group(2) for ii in pattern08.finditer(message.content)][0]
   Nick=[ii.group(1) for ii in pattern08.finditer(message.content)][0]
-  if len(Description if Description is not None else '')<4000:
+  if len(Description if Description is not None else '')<4000 and Nick not in [ele[2] for ele in dpfplist if ele[1]!=message.author.id]:
     dpfpembed=nextcord.Embed(title=message.author.name if Nick is None else Nick,description=Description if Description is not None else '')
     dpfpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
     dpfpembed.set_thumbnail(url=Image if Image is not None else message.author.display_avatar.url)
     dpfpembed.set_footer(text=str(message.author.id))
     channel = client.get_channel(Dprofilechannel)
     await message.edit(suppress=True)
-    print(message.author)
+    
     ifany=[i[0] for i in dpfplist if i[1]==(message.author.id)]
     if len(ifany)==1:
       msgdel=await channel.fetch_message(ifany[0])
       dpfpembed.add_field(name="Descoins", value=msgdel.embeds[0].fields[0].value, inline=False)
+      #
+      await updateModulelist(msgdel.embeds[0].title,Nick,message.author.id)
+      #
       await msgdel.delete()
     else:
       dpfpembed.add_field(name="Descoins", value=str(300), inline=False)
     await channel.send(embed=dpfpembed) 
     sentmessage=await message.channel.send(embed=dpfpembed)
     await setupDpfp()
+  elif Nick in [ele[2] for ele in dpfplist if ele[1]!=message.author.id]:
+    await message.reply("Profile name already exists. Try a unique name.")
 
 async def seeprofile(message):
   #
@@ -38,13 +43,20 @@ async def seeprofile(message):
   #
   from setup import dpfplist
   channel = client.get_channel(Dprofilechannel)
-  ifany=[i[0] for i in dpfplist if i[1]==int(re.sub('[<@!>]','',[ii.group(1) for ii in pattern09.finditer(message.content)][0]))]
+  ruserid=re.sub('[<@!>]','',[ii.group(1) for ii in pattern09.finditer(message.content)][0])
+  ifany=[i[0] for i in dpfplist if i[1]==int(ruserid)]
   if len(ifany)==1:
     damsg=await channel.fetch_message(ifany[0])
     output=damsg.embeds[0]
-    THEuser = await client.fetch_user(str(re.sub('[<@!>]','',[ii.group(1) for ii in pattern09.finditer(message.content)][0])))
+    THEuser = await client.fetch_user(str(ruserid))
     output.set_author(name=str(THEuser), icon_url=THEuser.display_avatar.url)
     output.set_field_at(0,name='Descoins',value='```ansi\n[1;33m ⏣'+output.fields[0].value+'```',inline=False)
+    #
+    from setup import dmodulelist
+    modnamesl=[ele[3] for ele in dmodulelist if ele[4]==int(ruserid)]
+    if len(modnamesl)>0:
+      output.add_field(name="Modules", value='```'+','.join(modnamesl)+'```', inline=False)
+    #
     await message.channel.send(embed=output)
 
 pattern10=re.compile(r'!give +([0-9]+) +to +([0-9,<>!@ ]+)')
@@ -102,3 +114,9 @@ async def appendamount(message,user000,amount):
     daembed0=damsg0.embeds[0]
     daembed0.set_field_at(0,name='Descoins',value=str(amount+int(daembed0.fields[0].value)),inline=False)
     await damsg0.edit(embed=daembed0)
+
+async def updateModulelist(Nick0,Nick1,userid):
+  if Nick0!=Nick1:
+    import setup
+    from setup import dmodulelist
+    setup.dmodulelist=[(ele[0],ele[1],ele[2],Nick1+(ele[3])[ele[3].index('.'):] if userid==ele[4] else ele[3],ele[4]) for ele in dmodulelist]
