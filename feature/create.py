@@ -13,7 +13,7 @@ def randomcharlen(leng):
   return(''.join(map(choice,["bcdfghjklmnpqrstvwxz7","aeiouyaeiouy0"]*int(leng/2))))
 
 def variablerep(string):
-  string=re.sub('\)',')\ue014',string)
+  string=re.sub('(\) *[\^\/] *\(.*\))','\\1\ue014',string)
   return re.sub('(.)_([A-Za-z0-9]*)', '\\1_\\2\ue014', string)
   
 def desmotable2(table):
@@ -29,7 +29,7 @@ def desmotable2(table):
     string=string+'\t'+'\t'.join(rest)+'\n'
   return string
 
-async def screenshotdes(graphkeys,settings,Settings,Title,dAhAsH,URL='https://www.desmos.com/calculator'):
+async def screenshotdes(graphkeys,settings,Settings,Title,dAhAsH,importasfolder,URL='https://www.desmos.com/calculator'):
   chrome_options = Options()
   chrome_options.add_argument('--no-sandbox')
   chrome_options.add_argument('--disable-dev-shm-usage')
@@ -41,9 +41,10 @@ async def screenshotdes(graphkeys,settings,Settings,Title,dAhAsH,URL='https://ww
   selectfirst=driver.find_element(By.CLASS_NAME, "dcg-mq-root-block")
   action =  ActionChains(driver);
   action.click(on_element = selectfirst)
-  CREDITS='"Graph created using https://github.com/DesmoSearch/Desmobot discord bot | MathEnthusiast314'
-  #action.send_keys(graphkeys+CREDITS)
+  
   graphkeyssplit=graphkeys.split('\n')
+  if graphkeyssplit[-1]=='':
+    graphkeyssplit.pop()
   for gks in graphkeyssplit:
     action.send_keys(gks)
     action.key_down(Keys.CONTROL)
@@ -52,7 +53,6 @@ async def screenshotdes(graphkeys,settings,Settings,Title,dAhAsH,URL='https://ww
     action.key_up(Keys.CONTROL)
     action.key_up(Keys.ALT)
     action.key_up('x')
-  action.send_keys(CREDITS)
   action.key_down(Keys.ALT)
   action.key_down(Keys.SHIFT)
   action.key_down(Keys.UP)
@@ -60,6 +60,40 @@ async def screenshotdes(graphkeys,settings,Settings,Title,dAhAsH,URL='https://ww
   action.key_up(Keys.SHIFT)
   action.key_up(Keys.UP)
   action.perform()
+  
+  #
+  importthem="""importdata=eval(\""""+str(importasfolder)+"""\".replace('Calc',''))
+state=Calc.getState()
+for(gi=0;gi<importdata.length;gi++){
+    state.expressions.list.push({id:importdata[gi][2],type:'folder',collapsed: true,title:'imported '+importdata[gi][0]+'\\n('+importdata[gi][1]+')\\nhttps://www.desmos.com/calculator/'+importdata[gi][2]})
+    try {
+        json0 = await (
+            await fetch(`https://www.desmos.com/calculator/`+importdata[gi][2], {
+                headers: {
+                    Accept: "application/json",
+                },
+            })
+        ).json()
+        
+        state.expressions.list.push.apply(state.expressions.list,
+            json0.state.expressions.list.map(function(x){
+                x.folderId=importdata[gi][2];
+                if (x.type=='expression'){
+                    if(x.latex!=undefined){
+                        x.latex = x.latex.replace(/(.)_{([A-Za-z0-9]*)}/g, '$1_{$2'+importdata[gi][3]+'}')
+                    }
+                }
+                return(x)
+            })
+        )
+    } catch (err) {}
+}
+state.expressions.list.push({id:'credit',type:'text',text:'Graph created using https://github.com/DesmoSearch/Desmobot discord bot | MathEnthusiast314'})
+Calc.setState(state);"""
+  
+  driver.execute_script(importthem)
+  #
+  
   exprmodification=[]
   for s in settings:
     s='' if s=='' else s[1:-1].replace(" ","")
@@ -87,6 +121,7 @@ objj=expressionss[i]
 updateexpr.push(update(objj,mod[i]))
 }
 Calc.setExpressions(updateexpr)""")
+  
   Graphupdate=''
   s2='' if Settings is None else Settings.replace(" ","")
   li2=filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] not in ['bounds'], s2.split(','))
@@ -154,17 +189,34 @@ async def compiledesmython(string,message):
   daGmsg = await message.reply(embed=await getready(message))
   RecMsg = await record(message)
   #
-  pattern=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n([\s\S]*)\n?```')
+  pattern=re.compile(r'!create *(?:"([A-Za-z0-9 \[\]]+)"(\?[a-z0-9]{10})?)?(?:\n\[!(.*)\])?\n+```.*\n(?:import +([A-Za-z0-9\.\,! ]+) +as +([A-Za-z0-9\, ]+)\n)?([\s\S]*?)\n?```')
   title=[ii.group(1) for ii in pattern.finditer(string)][0]
   hash=[ii.group(2) for ii in pattern.finditer(string)][0]
   hash=hash[1:] if hash is not None else hash
   settings=[ii.group(3) for ii in pattern.finditer(string)][0]
-  graphcontent=[ii.group(4) for ii in pattern.finditer(string)][0]
+  graphcontent=[ii.group(6) for ii in pattern.finditer(string)][0]
+  
+  modulesl=[ii.group(4) for ii in pattern.finditer(string)][0]
+  moduleas=[ii.group(5) for ii in pattern.finditer(string)][0]
+  #
+  importasfolder=[]
+  if modulesl is not None and moduleas is not None:
+    moduleslL=re.split(' *, *',modulesl)
+    moduleasL=re.split(' *, *',moduleas)
+    if len(moduleslL)==len(moduleasL):
+      from setup import dmodulelist
+      for modname, modas in zip(moduleslL,moduleasL):
+        thetup=[ele for ele in dmodulelist if ele[2]==modname or ele[3]==modname]
+        if len(thetup)>0:
+          graphcontent=re.sub('('+str(modas)+')'+'\.([A-Za-z0-9])([A-Za-z0-9]*)','\\2_\\3\\1',graphcontent)
+          importasfolder.append([thetup[0][3],thetup[0][2],thetup[0][1].fields[0].value.replace('https://www.desmos.com/calculator/',''),modas])
   graphcontent=variablerep(graphcontent).split('\n')
+  #
   graphkeys=''
   patternfolder=re.compile(r'folder(?:\s*"(.+)")?')
   graphsettings=[]
   patternexprsettings=re.compile(r'\[!(.*)\] (.*)')
+  
   for line in graphcontent:
     if line=='':
       graphkeys=graphkeys+'\ue015'
@@ -185,8 +237,8 @@ async def compiledesmython(string,message):
     else:
       graphsettings.append('')
       graphkeys=graphkeys+desmythonexpr(line)+'\n'
-  GraphCreated=await screenshotdes(graphkeys,graphsettings,settings,'"'+title+'"' if title is not None else 'undefined',hash)
-  dGembed = nextcord.Embed(color=0x12793e, title='Graph creating using Desmython',description='https://www.desmos.com/calculator/'+GraphCreated)
+  GraphCreated=await screenshotdes(graphkeys,graphsettings,settings,'"'+title+'"' if title is not None else 'undefined',hash,importasfolder)
+  dGembed = nextcord.Embed(color=0x12793e, title='Graph created using Desmython',description='https://www.desmos.com/calculator/'+GraphCreated)
   dGembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
   dGembed.set_image(url='https://saved-work.desmos.com/calc_thumbs/production/{}.png'.format(GraphCreated))
   daGmsg=await daGmsg.edit(embed=dGembed)
@@ -195,8 +247,10 @@ async def compiledesmython(string,message):
 '''asyncio.run(compiledesmython("""!create
 [!xAxisArrowMode=Desmos.AxisArrowModes.BOTH,bounds=-20|10|-10|10]
 ```css
+import me314.complex as 2d
 folder
 a=0
 a->a+sqrt(2^(sqrt(a+5))+2)+2
 /folder
+distance((2,0),2d.Power((x,y),(2,1)))=2
 [!id=3,color=Desmos.Colors.GREEN,lineStyle='DOTTED'] cos(x)```"""))'''

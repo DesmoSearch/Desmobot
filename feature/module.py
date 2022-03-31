@@ -105,7 +105,7 @@ async def on_raw_reaction_remove(payload):
 
 async def DmoduleStuff(message):
   from setup import dmodulelist
-  pattern06=re.compile(r'!module ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
+  pattern06=re.compile(r'!module ([a-zA-Z0-9\. ]{3,}|\/.*?\/)')
   #
   msg4 = await message.channel.send(embed=await getready(message))
   RecMsg = await record(message)
@@ -233,7 +233,7 @@ def dmoduleembed(Gnum,num,result,max_page,message,infocard=False):
   n1='\n'
   thedescription="".join(f'{"⇓⇓⇓"+n1+"> " if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. **{datahashes[i][3]}**:  {" ".join(datahashes[i][1].description.split()[:10])} ...\n'for i in range(len(datahashes)))
   
-  pattern06=re.compile(r'!module ([a-zA-Z0-9 ]{3,}|\/.*?\/)')
+  pattern06=re.compile(r'!module ([a-zA-Z0-9\. ]{3,}|\/.*?\/)')
   searchterm=[ii2.group(1) for ii2 in pattern06.finditer(message.content)][0]
   embed=''
   if not infocard:
@@ -250,6 +250,9 @@ def dmoduleembed(Gnum,num,result,max_page,message,infocard=False):
     #
     embed.set_field_at(1,name='Module name',value=result[Gnum-1][3],inline=False)
     #
+    varimp='```'+str(thingsyoucanimport(embed))+'```'
+    if len(varimp)<=1000:
+      embed.add_field(name="Importable variables/functions", value=varimp, inline=False)
     embed.set_footer(text=ordinal(Gnum)+" result for \""+searchterm+"\"")
   return embed
 
@@ -265,5 +268,18 @@ async def desmodule(message,id):
   embed.title=msg.content
   modname=str([ele[2] for ele in dpfplist if ele[1]==int(embed.footer.text)][0])+'.'+str(embed.fields[1].value)
   embed.set_field_at(1,name='Module name',value=modname,inline=False)
+  varimp='```'+str(thingsyoucanimport(embed))+'```'
+  if len(varimp)<=1000:
+    embed.add_field(name="Importable variables/functions", value=varimp, inline=False)
+    
   msgg0=await message.channel.send(embed=embed)
   RecMsg = await record(msgg0,RecMsg)
+
+def thingsyoucanimport(embed):
+  from getinfo import getinfo
+  theinfo = getinfo(embed.fields[0].value)
+  
+  listofmatches=[x.group() for x in re.finditer( r'[A-Za-z0-9]_{[A-Za-z0-9]*}',str(theinfo['expressions']))]
+  finallist=[re.sub('([A-Za-z0-9])_{([A-Za-z0-9]*)}','\\1\\2',string) for string in listofmatches]
+  return(list(set(finallist)))
+  
