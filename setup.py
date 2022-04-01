@@ -3,6 +3,7 @@ import random
 from nextcord.ext import commands
 from nextcord import DMChannel
 from replit import db
+from Variables import GraphsList
 gifsG=[]
 usersG=[]
 intents = nextcord.Intents.all()
@@ -14,13 +15,15 @@ dpfplist=[]
 dmodulelist=[]
 
 async def Onready():
-  await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} searches done!"))
+  await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} times used | {len(GraphsList)} Graphs!"))
   global setup
   if setup:
     await setuploading()
     await setupDhelp()
     await setupDpfp()
     await setupDmodule()
+    await ggupdate()
+    print('All Done..')
     setup=False
 
 async def loadinggif(msg0):
@@ -84,3 +87,18 @@ async def setupDmodule():
     userid=int(msgg.embeds[0].footer.text)
     modname=str([ele[2] for ele in dpfplist if ele[1]==userid][0])+'.'+str(msgg.embeds[0].fields[1].value)
     dmodulelist.append((json.loads(msgg.embeds[0].fields[2].value.replace('\'', '\"')),msgg.embeds[0],msgg.content,modname,userid))
+
+HashPlusCard=[]
+async def ggupdate():
+  import Variables
+  channel=client.get_channel(959405907857522728)
+  async for msgg in channel.history(limit=10000):
+    hash=msgg.embeds[0].fields[1].value
+    if hash not in GraphsList:
+      Variables.GraphsList.append(str(hash))
+      Variables.ParentGraphsList.append(None if msgg.embeds[0].fields[0].value=='None' else msgg.embeds[0].fields[0].value)
+      Variables.thetitles[str(hash)]=str(msgg.embeds[0].title)
+    if '!!!' in msgg.content and Variables.objowner.get(str(hash),None) is None:
+      Variables.objowner[str(hash)]=str(msgg.embeds[0].author.name)+'<@!'+str(msgg.embeds[0].footer.text)+'>'
+    Variables.bump[str(hash)]=int(msgg.embeds[0].fields[2].value)
+    HashPlusCard.append((str(hash),msgg.id))

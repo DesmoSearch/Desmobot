@@ -186,5 +186,9 @@ async def on_raw_reaction_remove(payload):
     message0 = await channel0.fetch_message(messageid)
   await DMreact(emoji,user,message0,client,False)
 
+from feature.recGraph import OnMessageG
+@client.listen()
+async def on_message(message):
+  await OnMessageG(message)
 keep_alive()
 client.run(token)

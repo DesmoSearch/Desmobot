@@ -6,7 +6,7 @@ import re
 import maya
 from getinfo import getinfo
 from setup import Onready, getready, client, record
-from Variables import objowner,GraphsList,thetitles,ParentGraphsList,noofresults, checkIfDuplicates
+from Variables import objowner,GraphsList,thetitles,ParentGraphsList,bump,noofresults, checkIfDuplicates
 
 pattern=re.compile(r"!desmos ([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?")
 pattern02=re.compile(r"!<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?")
@@ -139,6 +139,8 @@ async def onmessage1(message):
     ownerpart = lambda data00 : data00 if slashownercheck else data00.lower()
     
     searchresult = [hash for hash, title in thetitles.items() if (titlecond*bool(re.search(searchterm0, searchtermpart(str(title)))) or hashcond*bool(re.search(searchterm0, str(hash))) or ownercond*bool(re.search(searchterm0, searchtermpart(str(objowner.get(str(hash),None)))))) and (bool(re.search(titlepart(searchtermtitle), titlepart(str(title)))) and bool(re.search(hashpart(searchtermhash), hashpart(str(hash)))) and bool(re.search(ownerpart(searchtermowner), ownerpart(str(objowner.get(str(hash),None))))))]
+    #sortsearchresult=[0 if bump.get(str(dah),None) is None else -bump.get(str(hash),None) for dah in searchresult]
+    #searchresult = [x for _,x in sorted(zip(sortsearchresult,searchresult))]
 
   #https://gist.github.com/noaione/58cdd25a1cc19388021deb0a77582c97
   max_page=math.ceil(len(searchresult)/noofresults)
@@ -372,7 +374,7 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
   if 'thumbUrl' in dainfo.keys():
     embed.set_image(url=dainfo['thumbUrl'])
   if objowner.get(str(thehash),None) is not None:
-    embed.add_field(name="Possible Author", value=objowner.get(str(thehash),None), inline=False)
+    embed.add_field(name="Possible Author", value=re.sub('<@![0-9]*>','',objowner.get(str(thehash),None)), inline=False)
   
   embed.add_field(name="Date Created", value="<t:"+str(round(maya.parse(dainfo['created']).datetime().timestamp()))+":F>", inline=True)
   embed.add_field(name="Version", value="```"+str(dainfo['version'])+"```", inline=True)
@@ -430,21 +432,22 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
     pattern020=re.compile(r"!<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?")
     thehash010=[ii.group(1) for ii in pattern020.finditer(message.content)][0]
     embed.set_footer(text='!https://www.desmos.com/calculator/'+thehash010+'\n'+'→'.join(historylist))
-  
+
+  embed.add_field(name="Des[sub]Tree", value=gtree, inline=False)
   if dainfo['parent_hash'] is not None:
     embed.add_field(name="Parent Graph", value=("__**"+dainfo['parent_hash']+"**__" if dainfo['parent_hash']==underline else dainfo['parent_hash']), inline=True)
   embed.add_field(name="Current Graph", value=("__**"+thehash+"**__" if thehash==underline else thehash), inline=True)
   davalue=' , '.join([("__**"+GraphsList[i]+"**__" if GraphsList[i]==underline else GraphsList[i]) for i in range(len(GraphsList)) if (thehash in str(ParentGraphsList[i]) and ParentGraphsList[i] is not None)])
   if davalue!="":
     embed.add_field(name="Child Graphs", value=davalue, inline=True)
-  embed.add_field(name="Des[sub]Tree", value=gtree, inline=False)
+  
   
   return embed
 
 ############
 def createembed(Gnum,num,result,max_page,message):
   datahashes=result[noofresults*(num-1):noofresults*num+1]
-  thedescription="".join(f'{"> __**" if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. {"" if objowner.get(str(datahashes[i]),None) is None else str(objowner.get(str(datahashes[i]),None))+": "}[{thetitles[datahashes[i]]}](https://www.desmos.com/calculator/{datahashes[i]}){"**__" if Gnum==(num-1)*noofresults+i+1 else ""}\n'for i in range(len(datahashes)))
+  thedescription="".join(f'{"> __**" if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. {"" if objowner.get(str(datahashes[i]),None) is None else (re.sub("<@![0-9]*>","",str(objowner.get(str(datahashes[i]),None))))+": "}[{thetitles[datahashes[i]]}](https://www.desmos.com/calculator/{datahashes[i]}){"**__" if Gnum==(num-1)*noofresults+i+1 else ""}\n'for i in range(len(datahashes)))
   
   pattern2=re.compile(r"!desmos (([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?)")
   searchterm=[ii2.group(1) for ii2 in pattern2.finditer(message.content)][0]
