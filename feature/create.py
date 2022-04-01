@@ -62,7 +62,29 @@ async def screenshotdes(graphkeys,settings,Settings,Title,dAhAsH,importasfolder,
   action.perform()
   
   #
-  importthem="""importdata=eval(\""""+str(importasfolder)+"""\".replace('Calc',''))
+  importthem="""importdata=eval(\""""+str(importasfolder)+"""\")
+function computeContext(state) {
+  const calculator = new Desmos.GraphingCalculator();
+  calculator.setState(state);
+  // Emulate what happens in the web worker
+  const Context = require("core/math/context").Context;
+  const context = new Context();
+  const changeSet = {
+    isCompleteState: true,
+    statements: {},
+  };
+  for (let stmt of calculator.controller.getAllItemModels()) {
+    if (stmt.type !== "expression") continue;
+    changeSet.statements[stmt.id] = stmt;
+  }
+  const ticker = Calc.controller.listModel.ticker.cachedParsableState;
+  if (ticker.handlerLatex) {
+    changeSet.statements[ticker] = ticker;
+  }
+  context.processChangeSet(changeSet);
+  context.updateAnalysis();
+  return context;
+}
 state=Calc.getState()
 for(gi=0;gi<importdata.length;gi++){
     state.expressions.list.push({id:importdata[gi][2],type:'folder',collapsed: true,title:'imported '+importdata[gi][0]+'\\n('+importdata[gi][1]+')\\nhttps://www.desmos.com/calculator/'+importdata[gi][2]})
@@ -74,9 +96,21 @@ for(gi=0;gi<importdata.length;gi++){
                 },
             })
         ).json()
+        ctx=computeContext(json0.state);
+        fandvtobeimported=importdata[gi][4]
+        for (const vard0 of fandvtobeimported){
+            vard=ctx.frame[vard0]
+            if(vard){
+            if (vard.userData){
+                Depend=vard._dependencies.filter((e) => !vard._dummyDependencies.includes(e)&&(e.includes('_')||(e.length==1&&e!='e')))
+                fandvtobeimported.push.apply(fandvtobeimported,Depend)
+            }}
+        }
         
-        state.expressions.list.push.apply(state.expressions.list,
-            json0.state.expressions.list.map(function(x){
+        fandvtobeimported=fandvtobeimported.filter((x, i, a) => a.indexOf(x) == i)
+        //console.log(fandvtobeimported)
+        xyz=fandvtobeimported.map(function(y){
+                x=json0.state.expressions.list[ctx.frame[y].userData.index]
                 x.folderId=importdata[gi][2];
                 if (x.type=='expression'){
                     if(x.latex!=undefined){
@@ -84,8 +118,9 @@ for(gi=0;gi<importdata.length;gi++){
                     }
                 }
                 return(x)
-            })
-        )
+        })
+        state.expressions.list.push.apply(state.expressions.list,xyz)
+        
     } catch (err) {}
 }
 state.expressions.list.push({id:'credit',type:'text',text:'Graph created using https://github.com/DesmoSearch/Desmobot discord bot | MathEnthusiast314'})
@@ -208,8 +243,9 @@ async def compiledesmython(string,message):
       for modname, modas in zip(moduleslL,moduleasL):
         thetup=[ele for ele in dmodulelist if ele[2]==modname or ele[3]==modname]
         if len(thetup)>0:
+          varorfunc=[ii.group(2)+'_'+ii.group(3) for ii in re.finditer('('+str(modas)+')'+'\.([A-Za-z0-9])([A-Za-z0-9]*)',graphcontent)]
           graphcontent=re.sub('('+str(modas)+')'+'\.([A-Za-z0-9])([A-Za-z0-9]*)','\\2_\\3\\1',graphcontent)
-          importasfolder.append([thetup[0][3],thetup[0][2],thetup[0][1].fields[0].value.replace('https://www.desmos.com/calculator/',''),modas])
+          importasfolder.append([thetup[0][3],thetup[0][2],thetup[0][1].fields[0].value.replace('https://www.desmos.com/calculator/',''),modas,varorfunc])
   graphcontent=variablerep(graphcontent).split('\n')
   #
   graphkeys=''
