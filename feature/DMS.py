@@ -37,13 +37,13 @@ async def DMrec(msg,client):
     REPmessage = await msg.channel.fetch_message(msg.reference.message_id)
   if msg.author==client.user:
     return
-  elif 'Direct Message with' in str(msg.channel) or (getattr(getattr(REPmessage,'author',0),'id',0)==client.user.id and msg.channel.id!=DMthread):
+  elif 'Direct Message with' in str(msg.channel) or (getattr(getattr(REPmessage,'author',0),'id',0)==client.user.id and msg.channel.id!=DMthread) or ('<@!'+str(client.user.id)+'>' in msg.content and msg.channel.id!=DMthread):
     channel = client.get_channel(DMthread)
     Check=(Decode(REPmessage))
     REPLYTO=''
     if Check:
       REPLYTO = await channel.fetch_message(Check)
-    elif 'Direct Message' not in str(msg.channel):
+    elif 'Direct Message' not in str(msg.channel) and getattr(getattr(REPmessage,'author',0),'id',0)==client.user.id:
       REPLYTO=await channel.send(content='content: '+str(REPmessage.content)+'\nauthor: '+str(REPmessage.author)+';'+str(REPmessage.author.id)+'\nid: '+str(REPmessage.channel.id)+';'+str(REPmessage.id),embed=(REPmessage.embeds[0]) if REPmessage.embeds else None,files=[await f.to_file() for f in REPmessage.attachments])
     async with aiohttp.ClientSession() as session: 
       webhook = Webhook.from_url(DMurl, session=session)
