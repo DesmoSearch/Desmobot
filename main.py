@@ -78,6 +78,7 @@ async def on_raw_reaction_add(payload):
 
 @client.event
 async def on_message(message): 
+  import setup
   from setup import banned
   pattern=re.compile(r"!desmos ([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?")
   x=pattern.finditer(message.content)
@@ -109,7 +110,9 @@ async def on_message(message):
   mpattern07=re.compile(r'desmodule!([0-9]+)')
   mx07=mpattern07.finditer(message.content)
 
-  if message.author == client.user or message.author.bot or message.guild is None or message.author.id in banned:
+  if getattr(message.channel,"category_id",None)==948463189346119710 or setup.setup==True:
+    return
+  elif message.author == client.user or message.author.bot or message.guild is None or message.author.id in banned:
     if len(list(x10))==1 and message.content.startswith("!give") and message.author == client.user:
       await give(message)
     else:
@@ -123,9 +126,21 @@ async def on_message(message):
     await getready(message)
     RecMsg = await record(message)
     #
-    helpembed=nextcord.Embed(title="Commands",description="!dhelp, !desmos, ![+desmoslink], !/graph hash vs /graph hash")
+    helpembed=nextcord.Embed(title="Commands",description="\"{enter parameter value}\" omit the `{`,`}`\n\"?parameter\" in command is optional")
+    helpembed.add_field(name="README/Manual", value='➡️ https://mathenthusiastpi.gitbook.io/desmobot/ ⬅️', inline=False)
+    helpembed.add_field(name="Search", value='```!desmos {search term}?owner={search term for author}&title={search term for title}&hash={search term for hash}```\n\"={sub-search term}\" can be ommitted', inline=False)
+    helpembed.add_field(name="Graph info.", value='```!{graph link}```', inline=True)
+    helpembed.add_field(name="Compare graphs", value='```!/{graph hash1} vs /{graph hash2}```', inline=True)
+    helpembed.add_field(name="Create/View profile", value='*Create:*```!profile "{nickname}"?image={profile image url}\n{description}```\n*View:*```!profile {@mention or user-id}```', inline=False)
+    helpembed.add_field(name="Create Dhelp cards", value='```!dhelp\n[{list of keywords}]?image={image url}\n{description (markdown allowed)}```', inline=True)
+    helpembed.add_field(name="Search/View Dhelp cards", value='*Search:*```!dhelp {search term}```\n*View*:```card!{dhelp-card-id}```Example: card!959614757776801802 ', inline=True)
+    helpembed.add_field(name="Create Desmodule", value='```!module "{module name}"\n[{list of keywords}]\n{desmos graph link}\n{description (markdown allowed)}```', inline=False)
+    helpembed.add_field(name="Quick Graph f(x)", value='```!graph {some f(x) function}```', inline=True)
+    helpembed.add_field(name="Create Desmos Graph", value='```!create```\nSee README for more instructions', inline=True)
+    helpembed.add_field(name="Bulk Contribute/Set owner of a graph", value='```!contribute {list of graph hashes}?owner={author name}```', inline=False)
+    helpembed.add_field(name="README/Manual", value='➡️ https://mathenthusiastpi.gitbook.io/desmobot/ ⬅️', inline=False)
     helpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
-    await message.channel.send(embed=helpembed,content='')
+    await message.channel.send(embed=helpembed,content='DM me for desmos/bot related help:)\n\u200B')
   elif len(list(x03))==1:
     await GraphStuff(message)
   elif message.content=="!loading":
