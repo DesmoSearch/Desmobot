@@ -7,6 +7,7 @@ import asyncio
 import re
 from setup import getready, record
 import nextcord
+from replit import db
 
 from random import choice
 def randomcharlen(leng):
@@ -177,29 +178,7 @@ Calc.setMathBounds({
   top: Number(mod2[1].bounds[3])
 });
 }""")
-  saveg=r"""function SaveGraph(parenthash,graphhash,graphtitle,graphstate,thumbimg){
-if(parenthash==undefined){parenthash="";}
-if(graphtitle==undefined){graphtitle="Untitled Graph";}
-fetch("https://www.desmos.com/api/v1/calculator/save", {
-  "headers": {
-    "accept": "application/json, text/javascript, */*; q=0.01",
-    "accept-language": "en-US,en;q=0.9",
-    "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    "sec-ch-ua": "\" Not A;Brand\";v=\"99\", \"Chromium\";v=\"92\", \"Opera GX\";v=\"78\"",
-    "sec-ch-ua-mobile": "?0",
-    "sec-fetch-dest": "empty",
-    "sec-fetch-mode": "cors",
-    "sec-fetch-site": "same-origin",
-    "x-requested-with": "XMLHttpRequest"
-  },
-  "referrer": "https://www.desmos.com/calculator/"+parenthash,
-  "referrerPolicy": "strict-origin-when-cross-origin",
-  "body": "parent_hash="+parenthash+"&recovery_parent_hash="+parenthash+"&thumb_data="+thumbimg+"&graph_hash="+graphhash+"&my_graphs=false&is_update=false&title="+graphtitle+"&calc_state="+graphstate+"&lang=en",
-  "method": "POST",
-  "mode": "cors",
-  "credentials": "include"
-});
-}"""
+  saveg=db['saveg']
   dAhAsH=(randomcharlen(10) if dAhAsH is None else dAhAsH)+'0desmython'
   saveg2=saveg+"""\nlet parenthash0 = Calc._calc.globalHotkeys.mygraphsController.graphsController.currentGraph.hash ;
 let graphhash0 = '"""+dAhAsH+"""';

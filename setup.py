@@ -13,6 +13,8 @@ setup = True
 dhelplist=[]
 dpfplist=[]
 dmodulelist=[]
+#
+banned=[]
 
 async def Onready():
   await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} times used | {len(GraphsList)} Graphs!"))
@@ -23,6 +25,7 @@ async def Onready():
     await setupDpfp()
     await setupDmodule()
     await ggupdate()
+    await bannedU()
     print('All Done..')
     setup=False
 
@@ -87,7 +90,7 @@ async def setupDmodule():
     userid=int(msgg.embeds[0].footer.text)
     modname=str([ele[2] for ele in dpfplist if ele[1]==userid][0])+'.'+str(msgg.embeds[0].fields[1].value)
     dmodulelist.append((json.loads(msgg.embeds[0].fields[2].value.replace('\'', '\"')),msgg.embeds[0],msgg.content,modname,userid))
-
+#
 HashPlusCard=[]
 async def ggupdate():
   import Variables
@@ -102,3 +105,10 @@ async def ggupdate():
       Variables.objowner[str(hash)]=str(msgg.embeds[0].author.name)+'<@!'+str(msgg.embeds[0].footer.text)+'>'
     Variables.bump[str(hash)]=int(msgg.embeds[0].fields[2].value)
     HashPlusCard.append((str(hash),msgg.id))
+#
+async def bannedU():
+  global banned
+  banned=[]
+  channel=client.get_channel(959631837980925993)
+  async for msgg in channel.history(limit=10000):
+    banned.append(int(msgg.content))

@@ -22,13 +22,14 @@ async def on_ready():
 
 @client.event
 async def on_raw_reaction_add(payload):
+  from setup import banned
   emoji=payload.emoji
   user=payload.member
   messageid=payload.message_id
   channelid=payload.channel_id
   channel0 = client.get_channel(channelid)
   message0 = await channel0.fetch_message(messageid)
-  if user.id==client.user.id:
+  if user.id==client.user.id or user.id in banned:
     return
   elif emoji.name=='✅' and user.id==686012491607572515 and channelid==945245411449372702:
     def combine(gifs0,users0):
@@ -74,11 +75,10 @@ async def on_raw_reaction_add(payload):
       message0.author=user
       await DiffStuff(message0,True)
       
-    
-
 
 @client.event
 async def on_message(message): 
+  from setup import banned
   pattern=re.compile(r"!desmos ([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?")
   x=pattern.finditer(message.content)
   pattern02=re.compile(r"!<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?")
@@ -109,7 +109,7 @@ async def on_message(message):
   mpattern07=re.compile(r'desmodule!([0-9]+)')
   mx07=mpattern07.finditer(message.content)
 
-  if message.author == client.user or message.author.bot or message.guild is None:
+  if message.author == client.user or message.author.bot or message.guild is None or message.author.id in banned:
     if len(list(x10))==1 and message.content.startswith("!give") and message.author == client.user:
       await give(message)
     else:
@@ -193,5 +193,11 @@ from feature.recGraph import OnMessageG
 @client.listen()
 async def on_message(message):
   await OnMessageG(message)
+
+@client.listen()
+async def on_message(message):
+  if message.channel.id==959631837980925993:
+    from setup import bannedU
+    await bannedU()
 keep_alive()
 client.run(token)
