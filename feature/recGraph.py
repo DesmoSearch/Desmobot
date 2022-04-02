@@ -1,7 +1,5 @@
 import nextcord
 import re
-import math
-import asyncio
 import setup
 from setup import getready, client, record
 from getinfo import getinfo
@@ -12,6 +10,7 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
   
   patternG2=re.compile(r"!contribute +([a-z0-9 ,]*) *(?:\?owner=(\S*))?")
   xG2=patternG2.finditer(message.content)
+  xG3=patternG2.finditer(message.content)
   #
   link0='https://www.desmos.com/calculator/'+str(hash)
   geti=getinfo(link0)
@@ -50,6 +49,26 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
       if geti['parent_hash'] is not None:
         await recGraphE(message,geti['parent_hash'],theauthor,first='')
       return graphcard
+    elif (len(list(xG3))==1 and (hash in [ele[0] for ele in setup.HashPlusCard]) and first=='!!!'):
+      await setup.Onready()
+      user=message.author
+      getid=[ele[1] for ele in setup.HashPlusCard if ele[0]==hash]
+      channel = client.get_channel(channelgraphs)
+      damsg0=await channel.fetch_message(int(getid[0]))
+      if '!!!' not in damsg0.content:
+        embed00=damsg0.embeds[0]
+        if hash in GraphsList and objowner.get(str(hash),None) is not None:
+          pass
+        elif theauthor is None:
+          embed00.set_author(name=str(user), icon_url=user.display_avatar.url)
+        else:
+          embed00.set_author(name=str(theauthor))
+        graphcard=await damsg0.edit(content=damsg0.content+'!!!!',embed=embed00)
+        Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@!'+str(user.id)+'>'
+        return graphcard
+
+      
+
 
 async def OnMessageG(message):
   patternG=re.compile(r"https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
@@ -75,6 +94,7 @@ async def OnMessageG(message):
     for Gs in Gss:
       greturn=await recGraphE(message,Gs,Author)
       if greturn:
+        RecMsg = await record(greturn,RecMsg)
         if greturn.embeds[0].author:
           Earndescoin=Earndescoin+10
         else:

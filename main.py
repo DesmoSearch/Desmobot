@@ -136,7 +136,7 @@ async def on_message(message):
     helpembed.add_field(name="Search/View Dhelp cards", value='*Search:*```!dhelp {search term}```\n*View*:```card!{dhelp-card-id}```Example: card!959614757776801802 ', inline=True)
     helpembed.add_field(name="Create Desmodule", value='```!module "{module name}"\n[{list of keywords}]\n{desmos graph link}\n{description (markdown allowed)}```', inline=False)
     helpembed.add_field(name="Quick Graph f(x)", value='```!graph {some f(x) function}```', inline=True)
-    helpembed.add_field(name="Create Desmos Graph", value='```!create```\nSee README for more instructions', inline=True)
+    helpembed.add_field(name="Create Desmos Graph", value='```!create```\nSee README to learn more about !create', inline=True)
     helpembed.add_field(name="Bulk Contribute/Set owner of a graph", value='```!contribute {list of graph hashes}?owner={author name}```', inline=False)
     helpembed.add_field(name="README/Manual", value='➡️ https://mathenthusiastpi.gitbook.io/desmobot/ ⬅️', inline=False)
     helpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
