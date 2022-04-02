@@ -69,8 +69,8 @@ async def give(message):
   
   if len(ifany)==1:
     giver=await channel.fetch_message(ifany[0])
-    amount=int(giver.embeds[0].fields[0].value)
-    if much*len(to)<amount or message.author.id==686012491607572515:
+    amount=int(0 if giver.embeds[0].fields[0].value=='∞' else giver.embeds[0].fields[0].value)
+    if much*len(to)<amount or (message.author.id==686012491607572515 or message.author.id==client.user.id):
       #
       await getready(message)
       RecMsg = await record(message)
@@ -88,7 +88,8 @@ async def give(message):
             await defaultpfp(user,much)
             await appendamount(message,ifany[0],-much)
         except:
-          await message.reply("{} is an invalid user id".format(p))
+          if p!=str(client.user.id):
+            await message.reply("{} is an invalid user id".format(p))
       await message.add_reaction('✅')
     else:
       await message.reply("You don't have enough descoins to !give")
@@ -107,7 +108,7 @@ async def defaultpfp(user,much):
 
 async def appendamount(message,user000,amount):
   channel = client.get_channel(Dprofilechannel)
-  if message.author.id==686012491607572515 and amount<0:
+  if (message.author.id==686012491607572515 or message.author.id==client.user.id) and amount<0:
     pass
   else:
     damsg0=await channel.fetch_message(user000)

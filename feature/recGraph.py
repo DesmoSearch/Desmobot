@@ -3,7 +3,7 @@ import re
 import math
 import asyncio
 import setup
-from setup import Onready, getready, client, record
+from setup import getready, client, record
 from getinfo import getinfo
 import Variables
 from Variables import GraphsList, objowner
@@ -49,6 +49,7 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
       #
       if geti['parent_hash'] is not None:
         await recGraphE(message,geti['parent_hash'],theauthor,first='')
+      return graphcard
 
 async def OnMessageG(message):
   patternG=re.compile(r"https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
@@ -69,9 +70,21 @@ async def OnMessageG(message):
     RecMsg = await record(message)
     Gss=[ii.group(1) for ii in patternG2.finditer(message.content)][0].replace(' ','').split(',')
     Author=[ii.group(2) for ii in patternG2.finditer(message.content)][0]
+    Earndescoin=0
+    Togon=0
     for Gs in Gss:
-      await recGraphE(message,Gs,Author)
-    await message.add_reaction('✅')
+      greturn=await recGraphE(message,Gs,Author)
+      if greturn:
+        if greturn.embeds[0].author:
+          Earndescoin=Earndescoin+10
+        else:
+          Togon=1
+          await message.add_reaction('✅')
+    if Earndescoin>0:
+      await message.add_reaction('✅')
+      await message.reply(f"!give {Earndescoin} to {message.author.id}")
+    elif Togon==0:
+      await message.reply("Invalid graph hash(s) or Graph card(s) already exist.")
     
   elif len(list(xG3))==1:
     RecMsg = await record(message)

@@ -110,7 +110,10 @@ async def on_message(message):
   mx07=mpattern07.finditer(message.content)
 
   if message.author == client.user or message.author.bot or message.guild is None:
-    return
+    if len(list(x10))==1 and message.content.startswith("!give") and message.author == client.user:
+      await give(message)
+    else:
+      return
   elif len(list(x))==1:
     await onmessage1(message)
   elif len(list(x02))==1:
