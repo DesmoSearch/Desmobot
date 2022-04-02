@@ -52,6 +52,8 @@ async def Dmodulereact(emoji,user,message,client,addStatus):
       message0 = await channel0.fetch_message(int(firstline.split(';')[1]))
       if addStatus:
         await message0.add_reaction(emoji)
+        if emoji.name=='✅':
+          await message0.reply(f"!give 20 to {message0.author.id}")
       else:
         await message0.remove_reaction(emoji,client.user)
     elif '|' in message.content:
