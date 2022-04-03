@@ -84,7 +84,7 @@ async def on_message(message):
   x=pattern.finditer(message.content)
   pattern02=re.compile(r"!<?https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))>?")
   x02=pattern02.finditer(message.content)
-  pattern03=re.compile(r"(!graph ([^?]+)(?: *\?(?:(x|y|size)(?:=(\[.*?,.*?\]))?)(?:&(x|y|size)(?:=(\[.*?,.*?\]))?)?(?:&(x|y|size)(?:=(\[.*?,.*?\]))?)?)?)")
+  pattern03=re.compile(r"(!graph ([^?]+)(?: *\?(?:(x|y|size)(?:=(\[.*?,.*?\])))(?:&(x|y|size)(?:=(\[.*?,.*?\])))?(?:&(x|y|size)(?:=(\[.*?,.*?\])))?)?)")
   x03=pattern03.finditer(message.content)
   pattern04=re.compile(r"!\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))(?: vs \/((?:[a-z0-9]{20})|(?:[a-z0-9]{10})))?")
   x04=pattern04.finditer(message.content)

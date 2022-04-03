@@ -5,7 +5,7 @@ import re
 import json
 import math
 import nextcord
-pattern03=re.compile(r"(!graph ([^?]+)(?: *\?(?:(x|y|size)(?:=(\[.*?,.*?\]))?)(?:&(x|y|size)(?:=(\[.*?,.*?\]))?)?(?:&(x|y|size)(?:=(\[.*?,.*?\]))?)?)?)")
+pattern03=re.compile(r"(!graph ([^?]+)(?: *\?(?:(x|y|size)(?:=(\[.*?,.*?\])))(?:&(x|y|size)(?:=(\[.*?,.*?\])))?(?:&(x|y|size)(?:=(\[.*?,.*?\])))?)?)")
 
 async def GraphStuff(message):
   #
@@ -40,6 +40,7 @@ async def GraphStuff(message):
     searchtermsize=searchterm3sub[parameterterm3.index('size')]
   except ValueError:
     searchtermsize="[500,500]"
+  
   if json.loads(searchtermx)[1]-json.loads(searchtermx)[0]<0:
     searchtermx="[-10,10]"
   if json.loads(searchtermy)[1]-json.loads(searchtermy)[0]<0:
