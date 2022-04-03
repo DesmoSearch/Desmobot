@@ -56,7 +56,9 @@ async def GraphStuff(message):
   while True:
       reactmoji3 = []
       if first_run3:
-          reactmoji3.extend(['🔄','➡️','⬆️','⬅️','⬇️','🔬','🔭','✅'])
+          if ',' in searchterm3:
+            reactmoji3.append('🔄')
+          reactmoji3.extend(['➡️','⬆️','⬅️','⬇️','🔬','🔭','✅'])
           first_run3 = False
           msg3=await msg3.edit(embed=graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick))
           RecMsg = await record(msg3,RecMsg)
@@ -68,9 +70,11 @@ async def GraphStuff(message):
       scalex=(thex1-thex0)/10
       scaley=(they1-they0)/10
       zoomf=1.5
+
+      if ',' in searchterm3:
+        reactmoji3.append('🔄')
+      reactmoji3.extend(['➡️','⬆️','⬅️','⬇️','🔬','🔭','✅'])
       
-      reactmoji3.extend(['🔄','➡️','⬆️','⬅️','⬇️','🔬','🔭','✅'])
-      #['🔄','➡️','↗️','⬆️','↖️','⬅️','↙️','⬇️','↘️','➕','➖','✅']
       if str(message.author.id)=='686012491607572515':
          reactmoji3.append('❌')
 
@@ -158,7 +162,8 @@ def AutomateXYLabels(first,second):
   return (XLabel/5)
 
 def graphembed(message,wholeterm3,searchterm3,searchtermx,searchtermy,searchtermsize,xtick,ytick):
-  thelink=f"https://graphsketch.com/render.php?eqn1_eqn={searchterm3}&x_min={json.loads(searchtermx)[0]}&x_max={json.loads(searchtermx)[1]}&y_min={json.loads(searchtermy)[0]}&y_max={json.loads(searchtermy)[1]}&image_w={json.loads(searchtermsize)[0]}&image_h={json.loads(searchtermsize)[1]}&do_grid=1&x_tick={xtick}&y_tick={ytick}&x_label_freq=5&y_label_freq=5"
+  import urllib.parse
+  thelink=f"https://graphsketch.com/render.php?eqn1_eqn={urllib.parse.quote(searchterm3)}&x_min={json.loads(searchtermx)[0]}&x_max={json.loads(searchtermx)[1]}&y_min={json.loads(searchtermy)[0]}&y_max={json.loads(searchtermy)[1]}&image_w={json.loads(searchtermsize)[0]}&image_h={json.loads(searchtermsize)[1]}&do_grid=1&x_tick={xtick}&y_tick={ytick}&x_label_freq=5&y_label_freq=5"
   gembed=nextcord.Embed(title=wholeterm3,description=f"[Open image in a new tab]({thelink})")
   gembed.add_field(name="Graph(s)", value=searchterm3, inline=False)
   gembed.add_field(name="Domain", value=searchtermx, inline=True)
