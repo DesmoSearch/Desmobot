@@ -17,7 +17,6 @@ dmodulelist=[]
 banned=[]
 
 async def Onready():
-  await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} times used | {len(GraphsList)} Graphs!"))
   global setup
   if setup:
     await setuploading()
@@ -28,6 +27,7 @@ async def Onready():
     await bannedU()
     print('All Done..')
     setup=False
+  await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} times used | {len(GraphsList)} Graphs!"))
 
 async def loadinggif(msg0):
   selectR=random.randint(0,len(gifsG)-1)
