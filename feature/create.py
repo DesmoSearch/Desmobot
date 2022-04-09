@@ -5,9 +5,14 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 import asyncio
 import re
-from setup import getready, record
+#
+import setup
+import Variables
+#
+from setup import getready, record, client
 import nextcord
 from replit import db
+from getinfo import getinfo
 
 from random import choice
 def randomcharlen(leng):
@@ -207,57 +212,84 @@ async def compiledesmython(string,message):
   title=[ii.group(1) for ii in pattern.finditer(string)][0]
   hash=[ii.group(2) for ii in pattern.finditer(string)][0]
   hash=hash[1:] if hash is not None else hash
-  settings=[ii.group(3) for ii in pattern.finditer(string)][0]
-  graphcontent=[ii.group(6) for ii in pattern.finditer(string)][0]
-  
-  modulesl=[ii.group(4) for ii in pattern.finditer(string)][0]
-  moduleas=[ii.group(5) for ii in pattern.finditer(string)][0]
-  #
-  importasfolder=[]
-  if modulesl is not None and moduleas is not None:
-    moduleslL=re.split(' *, *',modulesl)
-    moduleasL=re.split(' *, *',moduleas)
-    if len(moduleslL)==len(moduleasL):
-      from setup import dmodulelist
-      for modname, modas in zip(moduleslL,moduleasL):
-        thetup=[ele for ele in dmodulelist if ele[2]==modname or ele[3]==modname]
-        if len(thetup)>0:
-          varorfunc=[ii.group(2)+'_'+ii.group(3) for ii in re.finditer('('+str(modas)+')'+'\.([A-Za-z0-9])([A-Za-z0-9]*)',graphcontent)]
-          graphcontent=re.sub('('+str(modas)+')'+'\.([A-Za-z0-9])([A-Za-z0-9]*)','\\2_\\3\\1',graphcontent)
-          importasfolder.append([thetup[0][3],thetup[0][2],thetup[0][1].fields[0].value.replace('https://www.desmos.com/calculator/',''),modas,varorfunc])
-  graphcontent=variablerep(graphcontent).split('\n')
-  #
-  graphkeys=''
-  patternfolder=re.compile(r'folder(?:\s*"(.+)")?')
-  graphsettings=[]
-  patternexprsettings=re.compile(r'\[!(.*)\] (.*)')
-  
-  for line in graphcontent:
-    if line=='':
-      graphkeys=graphkeys+'\ue015'
-      graphsettings.append('')
-    elif line[0]=='"' and line[-1]=='"':
-      graphkeys=graphkeys+line[0:-1]+'\n'
-      graphsettings.append('')
-    elif line.startswith('/folder')==True:
-      graphkeys=graphkeys+'\ue003'
-    elif len(list(patternfolder.finditer(line)))==1:
-      foldername=[ii.group(1) for ii in patternfolder.finditer(line)][0]
-      foldername=''if foldername is None else foldername
-      graphkeys=graphkeys+'folder'+foldername+'\n'
-      graphsettings.append('')
-    elif len(list(patternexprsettings.finditer(line)))==1 and line[:2]=='[!':
-      graphsettings.append('{'+[ii.group(1) for ii in patternexprsettings.finditer(line)][0]+'}')
-      graphkeys=graphkeys+desmythonexpr([ii.group(2) for ii in patternexprsettings.finditer(line)][0])+'\n'
+  GOon = getinfo('https://www.desmos.com/calculator/'+str(hash)+'0desmython')=={} if hash is not None else True
+  if GOon:
+    settings=[ii.group(3) for ii in pattern.finditer(string)][0]
+    graphcontent=[ii.group(6) for ii in pattern.finditer(string)][0]
+    
+    modulesl=[ii.group(4) for ii in pattern.finditer(string)][0]
+    moduleas=[ii.group(5) for ii in pattern.finditer(string)][0]
+    #
+    importasfolder=[]
+    if modulesl is not None and moduleas is not None:
+      moduleslL=re.split(' *, *',modulesl)
+      moduleasL=re.split(' *, *',moduleas)
+      if len(moduleslL)==len(moduleasL):
+        from setup import dmodulelist
+        for modname, modas in zip(moduleslL,moduleasL):
+          thetup=[ele for ele in dmodulelist if ele[2]==modname or ele[3]==modname]
+          if len(thetup)>0:
+            varorfunc=[ii.group(2)+'_'+ii.group(3) for ii in re.finditer('('+str(modas)+')'+'\.([A-Za-z0-9])([A-Za-z0-9]*)',graphcontent)]
+            graphcontent=re.sub('('+str(modas)+')'+'\.([A-Za-z0-9])([A-Za-z0-9]*)','\\2_\\3\\1',graphcontent)
+            importasfolder.append([thetup[0][3],thetup[0][2],thetup[0][1].fields[0].value.replace('https://www.desmos.com/calculator/',''),modas,varorfunc])
+    graphcontent=variablerep(graphcontent).split('\n')
+    #
+    graphkeys=''
+    patternfolder=re.compile(r'folder(?:\s*"(.+)")?')
+    graphsettings=[]
+    patternexprsettings=re.compile(r'\[!(.*)\] (.*)')
+    
+    for line in graphcontent:
+      if line=='':
+        graphkeys=graphkeys+'\ue015'
+        graphsettings.append('')
+      elif line[0]=='"' and line[-1]=='"':
+        graphkeys=graphkeys+line[0:-1]+'\n'
+        graphsettings.append('')
+      elif line.startswith('/folder')==True:
+        graphkeys=graphkeys+'\ue003'
+      elif len(list(patternfolder.finditer(line)))==1:
+        foldername=[ii.group(1) for ii in patternfolder.finditer(line)][0]
+        foldername=''if foldername is None else foldername
+        graphkeys=graphkeys+'folder'+foldername+'\n'
+        graphsettings.append('')
+      elif len(list(patternexprsettings.finditer(line)))==1 and line[:2]=='[!':
+        graphsettings.append('{'+[ii.group(1) for ii in patternexprsettings.finditer(line)][0]+'}')
+        graphkeys=graphkeys+desmythonexpr([ii.group(2) for ii in patternexprsettings.finditer(line)][0])+'\n'
+      else:
+        graphsettings.append('')
+        graphkeys=graphkeys+desmythonexpr(line)+'\n'
+    GraphCreated=await screenshotdes(graphkeys,graphsettings,settings,'"'+title+'"' if title is not None else 'undefined',hash,importasfolder)
+    link0='https://www.desmos.com/calculator/'+GraphCreated
+    dGembed = nextcord.Embed(color=0x12793e, title='Graph created using Desmython',description=link0)
+    dGembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
+    dGembed.set_image(url='https://saved-work.desmos.com/calc_thumbs/production/{}.png'.format(GraphCreated))
+    daGmsg=await daGmsg.edit(embed=dGembed)
+    RecMsg = await record(daGmsg,RecMsg)
+    #record Graph (from recGraph.py)
+    geti=getinfo(link0)
+    embed=nextcord.Embed(title=str(geti['title']),description=link0)
+    embed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
+    embed.set_image(url=geti['thumbUrl'])
+    embed.add_field(name="Parent", value=str(geti['parent_hash']), inline=True)
+    embed.add_field(name="Graph", value=str(GraphCreated), inline=True)
+    embed.add_field(name="Score", value=str(0), inline=False)
+    embed.set_footer(text=str(message.author.id))
+    des=''
+    if 'Direct Message' in str(message.channel):
+      des=str(message.author.id)+'|'+str(message.id)
     else:
-      graphsettings.append('')
-      graphkeys=graphkeys+desmythonexpr(line)+'\n'
-  GraphCreated=await screenshotdes(graphkeys,graphsettings,settings,'"'+title+'"' if title is not None else 'undefined',hash,importasfolder)
-  dGembed = nextcord.Embed(color=0x12793e, title='Graph created using Desmython',description='https://www.desmos.com/calculator/'+GraphCreated)
-  dGembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
-  dGembed.set_image(url='https://saved-work.desmos.com/calc_thumbs/production/{}.png'.format(GraphCreated))
-  daGmsg=await daGmsg.edit(embed=dGembed)
-  RecMsg = await record(daGmsg,RecMsg)
+      des=str(message.channel.id)+';'+str(message.id)
+    channel123 = client.get_channel(959405907857522728)
+    graphcard=await channel123.send(content=des+'!!!',embed=embed)
+    setup.HashPlusCard.append((str(GraphCreated),graphcard.id))
+    Variables.GraphsList.append(str(GraphCreated))
+    Variables.ParentGraphsList.append(geti['parent_hash'])
+    Variables.thetitles[str(GraphCreated)]=str(geti['title'])
+    Variables.objowner[str(GraphCreated)]=str(message.author)+'<@!'+str(message.author.id)+'>'
+    #
+  else:
+    await daGmsg.edit(embed=None,content='Graph with hash "{}0desmython" already exists.'.format(hash))
 
 '''asyncio.run(compiledesmython("""!create
 [!xAxisArrowMode=Desmos.AxisArrowModes.BOTH,bounds=-20|10|-10|10]
