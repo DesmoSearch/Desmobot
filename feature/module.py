@@ -233,7 +233,7 @@ async def DmoduleStuff(message):
 def dmoduleembed(Gnum,num,result,max_page,message,infocard=False):
   datahashes=result[noofresults*(num-1):noofresults*num+1]
   n1='\n'
-  thedescription="".join(f'{"⇓⇓⇓"+n1+"> " if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. **{datahashes[i][3]}**:  {" ".join(datahashes[i][1].description.split()[:10])} ...\n'for i in range(len(datahashes)))
+  thedescription="".join(f'{"⇓⇓⇓"+n1+"> " if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. **{datahashes[i][3]}**:  {(" ".join(datahashes[i][1].description.split()[:10])).replace("```","")} ...\n'for i in range(len(datahashes)))
   
   pattern06=re.compile(r'!module ([a-zA-Z0-9\. ]{3,}|\/.*?\/)')
   searchterm=[ii2.group(1) for ii2 in pattern06.finditer(message.content)][0]
