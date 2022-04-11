@@ -138,7 +138,7 @@ Calc.setState(state);"""
   exprmodification=[]
   for s in settings:
     s='' if s=='' else s[1:-1].replace(" ","")
-    li=filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] not in ['id','type'], s.split(','))
+    li=filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] not in ['id','type'], s.split('&'))
     li0='{'+','.join('"'+v.split('=')[0]+'":'+v.split('=')[1].replace("'", "\"") for v in li)+'}'
     exprmodification.append(('{}' if li0=='' else li0))
   driver.execute_script("""mod=eval('"""+'['+','.join(exprmodification)+']'+"""'.replace('Calc',''))
@@ -165,10 +165,10 @@ Calc.setExpressions(updateexpr)""")
   
   Graphupdate=''
   s2='' if Settings is None else Settings.replace(" ","")
-  li2=filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] not in ['bounds'], s2.split(','))
+  li2=filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] not in ['bounds'], s2.split('&'))
   li02='{'+','.join('"'+v.split('=')[0]+'":'+v.split('=')[1].replace("'", "\"") for v in li2)+'}'
   Graphupdate=[('{}' if li02=='' else li02)]
-  li3=list(filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] in ['bounds'], s2.split(',')))
+  li3=list(filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] in ['bounds'], s2.split('&')))
   if len(li3)==1:
     li3 = li3[0]
     li03='{'+('"'+li3.split('=')[0]+'":'+str(li3.split('=')[1].split('|')).replace("'","\""))+'}'
