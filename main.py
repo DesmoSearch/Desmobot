@@ -217,5 +217,19 @@ async def on_message(message):
   if message.channel.id==959631837980925993:
     from setup import bannedU
     await bannedU()
+
+@client.event
+async def on_member_join(member):
+  if member.guild.id==931036887693533204:
+    embed=nextcord.Embed(title="<a:m_welcome1:932191399087046687><a:m_welcome2:932191456846819398> to "+member.guild.name+'!',description='Enjoy your stay here.')
+    ordinal = lambda n: f'{n}{"tsnrhtdd"[(n//10%10!=1)*(n%10<4)*n%10::4]}'
+    print(member.guild.member_count)
+    embed.set_author(name=ordinal(member.guild.member_count+1)+' member')
+    embed.add_field(name="Read the rules and verify!", value='<#931036888196845649>', inline=False)
+    embed.add_field(name="Claim roles!", value='<#931410233232871484>', inline=False)
+    embed.set_thumbnail(url=member.display_avatar.url)
+    channelW = client.get_channel(931048065601785896)
+    await channelW.send(content=member.mention,embed=embed)
+
 keep_alive()
 client.run(token)
