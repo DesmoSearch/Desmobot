@@ -37,7 +37,7 @@ async def DMrec(msg,client):
     REPmessage = await msg.channel.fetch_message(msg.reference.message_id)
   if msg.author==client.user:
     return
-  elif 'Direct Message with' in str(msg.channel) or (getattr(getattr(REPmessage,'author',0),'id',0)==client.user.id and msg.channel.id!=DMthread) or ('<@!'+str(client.user.id)+'>' in msg.content and msg.channel.id!=DMthread):
+  elif 'Direct Message with' in str(msg.channel) or (getattr(getattr(REPmessage,'author',0),'id',0)==client.user.id and msg.channel.id!=DMthread) or (('<@'+str(client.user.id)+'>' in msg.content or '<@!'+str(client.user.id)+'>' in msg.content) and msg.channel.id!=DMthread):
     channel = client.get_channel(DMthread)
     Check=(Decode(REPmessage))
     REPLYTO=''

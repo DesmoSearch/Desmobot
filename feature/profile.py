@@ -4,7 +4,7 @@ import math
 import asyncio
 from setup import client,setupDpfp, getready, record
 pattern08=re.compile(r'!profile +"([A-Za-z0-9]+)"(?:\?image=(.+))?(?:\n([\s\S]*))?')
-pattern09=re.compile(r'!profile +([0-9]+|<@![0-9]+>)')
+pattern09=re.compile(r'!profile +([0-9]+|<@!?[0-9]+>)')
 Dprofilechannel=950550255789830164
 
 async def Dprofile(message):

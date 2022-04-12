@@ -96,7 +96,7 @@ async def on_message(message):
   x07=pattern07.finditer(message.content)
   pattern08=re.compile(r'!profile +"([A-Za-z0-9]+)"(?:\?image=(.+))?(?:\n([\s\S]*))?')
   x08=pattern08.finditer(message.content)
-  pattern09=re.compile(r'!profile +([0-9]+|<@![0-9]+>)')
+  pattern09=re.compile(r'!profile +([0-9]+|<@!?[0-9]+>)')
   x09=pattern09.finditer(message.content)
   pattern10=re.compile(r'!give +([0-9]+) +to +([0-9,<>!@ ]+)')
   x10=pattern10.finditer(message.content)

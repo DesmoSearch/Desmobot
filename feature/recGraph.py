@@ -44,7 +44,7 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
         Variables.ParentGraphsList.append(geti['parent_hash'])
         Variables.thetitles[str(hash)]=str(geti['title'])
       if first=='!!!' and objowner.get(str(hash),None) is None:
-        Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@!'+str(user.id)+'>'
+        Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@'+str(user.id)+'>'
       #
       if geti['parent_hash'] is not None:
         await recGraphE(message,geti['parent_hash'],theauthor,first='')
@@ -64,7 +64,7 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
         else:
           embed00.set_author(name=str(theauthor))
         graphcard=await damsg0.edit(content=damsg0.content+'!!!!',embed=embed00)
-        Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@!'+str(user.id)+'>'
+        Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@'+str(user.id)+'>'
         return graphcard
 
       

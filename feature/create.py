@@ -289,7 +289,7 @@ async def compiledesmython(string,message):
     Variables.GraphsList.append(str(GraphCreated))
     Variables.ParentGraphsList.append(geti['parent_hash'])
     Variables.thetitles[str(GraphCreated)]=str(geti['title'])
-    Variables.objowner[str(GraphCreated)]=str(message.author)+'<@!'+str(message.author.id)+'>'
+    Variables.objowner[str(GraphCreated)]=str(message.author)+'<@'+str(message.author.id)+'>'
     #
   else:
     await daGmsg.edit(embed=None,content='Graph with hash "{}0desmython" already exists.'.format(hash))

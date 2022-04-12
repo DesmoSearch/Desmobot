@@ -374,7 +374,7 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
   if 'thumbUrl' in dainfo.keys():
     embed.set_image(url=dainfo['thumbUrl'])
   if objowner.get(str(thehash),None) is not None:
-    embed.add_field(name="Possible Author", value=re.sub('<@![0-9]*>','',objowner.get(str(thehash),None)), inline=False)
+    embed.add_field(name="Possible Author", value=re.sub('<@!?[0-9]*>','',objowner.get(str(thehash),None)), inline=False)
   
   embed.add_field(name="Date Created", value="<t:"+str(round(maya.parse(dainfo['created']).datetime().timestamp()))+":F>", inline=True)
   embed.add_field(name="Version", value="```"+str(dainfo['version'])+"```", inline=True)
@@ -447,7 +447,7 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
 ############
 def createembed(Gnum,num,result,max_page,message):
   datahashes=result[noofresults*(num-1):noofresults*num+1]
-  thedescription="".join(f'{"> __**" if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. {"" if objowner.get(str(datahashes[i]),None) is None else (re.sub("<@![0-9]*>","",str(objowner.get(str(datahashes[i]),None))))+": "}[{thetitles[datahashes[i]]}](https://www.desmos.com/calculator/{datahashes[i]}){"**__" if Gnum==(num-1)*noofresults+i+1 else ""}\n'for i in range(len(datahashes)))
+  thedescription="".join(f'{"> __**" if Gnum==(num-1)*noofresults+i+1 else ""}{(num-1)*noofresults+i+1}. {"" if objowner.get(str(datahashes[i]),None) is None else (re.sub("<@!?[0-9]*>","",str(objowner.get(str(datahashes[i]),None))))+": "}[{thetitles[datahashes[i]]}](https://www.desmos.com/calculator/{datahashes[i]}){"**__" if Gnum==(num-1)*noofresults+i+1 else ""}\n'for i in range(len(datahashes)))
   
   pattern2=re.compile(r"!desmos (([a-zA-Z0-9 ]{3,}|\/.*?\/)(?: *\?(?:(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?(?:&(title|hash|owner)(?:=([a-zA-Z0-9 ]{3,}|\/.*?\/))?)?)?)")
   searchterm=[ii2.group(1) for ii2 in pattern2.finditer(message.content)][0]
