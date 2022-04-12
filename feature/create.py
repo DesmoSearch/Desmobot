@@ -141,15 +141,18 @@ Calc.setState(state);"""
     li=filter(lambda v: '=' in v and v.split('=')[0].isalnum() and v.split('=')[0] not in ['id','type'], s.split('&'))
     li0='{'+','.join('"'+v.split('=')[0]+'":'+v.split('=')[1].replace("'", "\"") for v in li)+'}'
     exprmodification.append(('{}' if li0=='' else li0))
-  driver.execute_script("""mod=eval('"""+'['+','.join(exprmodification)+']'+"""'.replace('Calc',''))
+  driver.execute_script("""mod=eval('"""+'['+','.join(exprmodification)+']'+"""'.replace('Calc','').replace(/\\\\/g,'\\\\\\\\'))
 function update(obj/*, …*/) {
     for (var i=1; i<arguments.length; i++) {
         for (var prop in arguments[i]) {
             var val = arguments[i][prop];
-            if (typeof val == "object") // this also applies to arrays or null!
-                update(obj[prop], val);
-            else
-                obj[prop] = val;
+            if (typeof val == "object"){ // this also applies to arrays or null!
+                if (obj[prop]==undefined){
+                    obj[prop]={};
+                }
+                update(obj[prop], val);}
+            else{
+                obj[prop] = val;}
         }
     }
     return obj;
