@@ -36,14 +36,14 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
       else:
         des=str(message.channel.id)+';'+str(message.id)
       channel = client.get_channel(channelgraphs)
-      graphcard=await channel.send(content=des+first,embed=embed)
+      graphcard=await channel.send(content=des+(first if '!https://www.desmos.com/calculator' not in message.content else ''),embed=embed)
       #
       setup.HashPlusCard.append((str(hash),graphcard.id))
       if hash not in GraphsList:
         Variables.GraphsList.append(str(hash))
         Variables.ParentGraphsList.append(geti['parent_hash'])
         Variables.thetitles[str(hash)]=str(geti['title'])
-      if first=='!!!' and objowner.get(str(hash),None) is None:
+      if first=='!!!' and objowner.get(str(hash),None) is None and '!https://www.desmos.com/calculator' not in message.content:
         Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@'+str(user.id)+'>'
       #
       if geti['parent_hash'] is not None:
