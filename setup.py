@@ -109,6 +109,8 @@ async def ggupdate():
       Variables.thetitles[str(hash)]=str(msgg.embeds[0].title)
     if '!!!' in msgg.content and Variables.objowner.get(str(hash),None) is None:
       Variables.objowner[str(hash)]=str(msgg.embeds[0].author.name)+'<@'+str(msgg.embeds[0].footer.text)+'>'
+    if '!!!' in msgg.content and Variables.objowner.get(str(hash),None) is not None and hash in GraphsList:
+      Variables.objowner[str(hash)]=str(msgg.embeds[0].author.name)+'<@'+str(msgg.embeds[0].footer.text)+'>'
     Variables.bump[str(hash)]=int(msgg.embeds[0].fields[2].value)
     HashPlusCard.append((str(hash),msgg.id))
 #

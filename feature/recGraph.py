@@ -20,7 +20,10 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
       user=message.author
       embed=nextcord.Embed(title=str(geti['title']),description=link0)
       if hash in GraphsList and objowner.get(str(hash),None) is not None:
-        pass
+        if user.id in [468963362131279882,686012491607572515]:
+          embed.set_author(name=str(theauthor))
+        else:
+          pass
       elif theauthor is None:
         embed.set_author(name=str(user), icon_url=user.display_avatar.url)
       else:
@@ -45,6 +48,8 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
         Variables.thetitles[str(hash)]=str(geti['title'])
       if first=='!!!' and objowner.get(str(hash),None) is None and '!https://www.desmos.com/calculator' not in message.content:
         Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@'+str(user.id)+'>'
+      if first=='!!!' and objowner.get(str(hash),None) is not None and '!https://www.desmos.com/calculator' not in message.content and hash in GraphsList and user.id in [468963362131279882,686012491607572515]:
+        Variables.objowner[str(hash)]=(str(theauthor))+'<@'+str(user.id)+'>'
       #
       if geti['parent_hash'] is not None:
         await recGraphE(message,geti['parent_hash'],theauthor,first='')
