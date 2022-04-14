@@ -19,6 +19,12 @@ banned=[]
 async def Onready():
   global setup
   if setup:
+    for guild in client.guilds:
+      print(guild.name+':'+str(guild.id))
+    '''for guildid in []:
+      guild0 = client.get_guild(guildid)
+      li=await guild0.text_channels[0].create_invite(max_age=0,unique=False)
+      print(li.url)'''
     await setuploading()
     await setupDhelp()
     await setupDpfp()
