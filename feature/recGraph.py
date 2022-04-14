@@ -20,7 +20,7 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
       user=message.author
       embed=nextcord.Embed(title=str(geti['title']),description=link0)
       if hash in GraphsList and objowner.get(str(hash),None) is not None:
-        if user.id in [468963362131279882,686012491607572515]:
+        if user.id in [468963362131279882,686012491607572515] and theauthor is not None:
           embed.set_author(name=str(theauthor))
         else:
           pass
@@ -48,7 +48,7 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
         Variables.thetitles[str(hash)]=str(geti['title'])
       if first=='!!!' and objowner.get(str(hash),None) is None and '!https://www.desmos.com/calculator' not in message.content:
         Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@'+str(user.id)+'>'
-      if first=='!!!' and objowner.get(str(hash),None) is not None and '!https://www.desmos.com/calculator' not in message.content and hash in GraphsList and user.id in [468963362131279882,686012491607572515]:
+      if first=='!!!' and objowner.get(str(hash),None) is not None and '!https://www.desmos.com/calculator' not in message.content and hash in GraphsList and user.id in [468963362131279882,686012491607572515] and theauthor is not None:
         Variables.objowner[str(hash)]=(str(theauthor))+'<@'+str(user.id)+'>'
       #
       if geti['parent_hash'] is not None:
@@ -71,6 +71,13 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
         graphcard=await damsg0.edit(content=damsg0.content+'!!!!',embed=embed00)
         Variables.objowner[str(hash)]=(str(user) if theauthor is None else theauthor)+'<@'+str(user.id)+'>'
         return graphcard
+      elif '!!!' in damsg0.content and hash in GraphsList and objowner.get(str(hash),None) is not None and user.id in [468963362131279882,686012491607572515] and theauthor is not None:
+        embed00=damsg0.embeds[0]
+        embed00.set_author(name=str(theauthor))
+        graphcard=await damsg0.edit(content=damsg0.content,embed=embed00)
+        Variables.objowner[str(hash)]=(str(theauthor))
+        return graphcard
+        
 
       
 
