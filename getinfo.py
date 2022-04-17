@@ -24,6 +24,9 @@ def getinfo(hashurl):
       finaldict['notes'], finaldict['folders']=[],[]
       finaldict['notes']=[expr[i] for i in range(len(expr)) if expr[i]['type' if 'type' in expr[i] else 'id']=='text']
       finaldict['folders']=[expr[i] for i in range(len(expr)) if expr[i]['type' if 'type' in expr[i] else 'id']=='folder']
+      for folder0 in finaldict['folders']:
+        if folder0.get('title',None) is None:
+          folder0['title']='None'
       patternvar = re.compile(r"([A-Za-z](?:_{?\w*}?)?)=")
       finaldict['variables']=list(set([ii.group(1) for ii in patternvar.finditer(str(expr))]))
   return (finaldict)
