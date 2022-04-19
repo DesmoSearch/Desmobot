@@ -114,8 +114,7 @@ async def DhelpStuff(message):
 
     searchterm0 = [searchterm0] if slashcheckterm else re.split(' +',searchterm0)
     searchresult4=[tup for tup in dhelplist if any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0] for searchword in searchterm0])]
-    sortsearchresult4=([-sum([any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0]]) for searchword in searchterm0]) for tup in searchresult4])
-    searchresult4= [x for _,x in sorted(zip(sortsearchresult4,searchresult4))]
+    searchresult4= sorted(searchresult4, key=lambda tup: -sum([any([bool(re.search(searchword, searchtermpart(str(ele)))) for ele in tup[0]]) for searchword in searchterm0]))
 
   max_page4=math.ceil(len(searchresult4)/noofresults)
   first_run4 = True
