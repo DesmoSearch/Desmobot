@@ -58,8 +58,9 @@ async def getready(message):
   return await loadinggif(message)
 
 async def dmsend(msg):
-    user = await client.fetch_user("686012491607572515")
-    await DMChannel.send(user,"```"+msg+"```")
+    '''user = await client.fetch_user("686012491607572515")
+    await DMChannel.send(user,"```"+msg+"```")'''
+    pass
 
 async def record(msg0,msg1=''):
   if msg1 == '':

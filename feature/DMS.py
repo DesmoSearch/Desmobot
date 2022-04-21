@@ -115,4 +115,7 @@ async def custome314(msg,client):
     elif len(thecontent)==4:
       msgchannel=client.get_channel(int(thecontent[1]))
       msgtoreply=await msgchannel.fetch_message(int(thecontent[2]))
-      await msgtoreply.reply(content=Encode(msg)+thecontent[3])
+      channeldmthread = client.get_channel(DMthread)
+      async with aiohttp.ClientSession() as session: 
+        webhook = Webhook.from_url(DMurl, session=session)
+        await Wholesome(msgtoreply,webhook,channeldmthread)
