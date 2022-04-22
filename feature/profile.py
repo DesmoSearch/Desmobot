@@ -58,6 +58,8 @@ async def seeprofile(message):
       output.add_field(name="Modules", value='```'+','.join(modnamesl)+'```', inline=False)
     #
     await message.channel.send(embed=output)
+  else:
+    await message.channel.send(content='User "'+str(message.author)+'" has no profile created.\nTo create a profile, check out: https://mathenthusiastpi.gitbook.io/desmos/commands/profile')
 
 pattern10=re.compile(r'!give +([0-9]+) +to +([0-9,<>!@ ]+)')
 async def give(message):

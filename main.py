@@ -158,6 +158,9 @@ async def on_message(message):
     await DhelpStuff(message)
   elif len(list(x07))==1:
     await card(message,[ii.group(1) for ii in pattern07.finditer(message.content)][0])
+  elif message.content=='!profile':
+    message.content='!profile '+str(message.author.id)
+    await seeprofile(message)
   elif len(list(x09))==1 and message.content.startswith("!profile"):
     await seeprofile(message)
   elif len(list(x08))==1 and message.content.startswith("!profile"):
