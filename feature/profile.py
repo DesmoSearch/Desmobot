@@ -59,7 +59,8 @@ async def seeprofile(message):
     #
     await message.channel.send(embed=output)
   else:
-    await message.channel.send(content='User "'+str(message.author)+'" has no profile created.\nTo create a profile, check out: https://mathenthusiastpi.gitbook.io/desmos/commands/profile')
+    THEuser=await client.fetch_user(str(ruserid))
+    await message.channel.send(content='User "'+str(THEuser)+'" has no profile created.\nTo create a profile, check out: https://mathenthusiastpi.gitbook.io/desmos/commands/profile')
 
 pattern10=re.compile(r'!give +([0-9]+) +to +([0-9,<>!@ ]+)')
 async def give(message):
