@@ -9,13 +9,13 @@ channelgraphs = 959405907857522728
 async def recGraphE(message,hash,theauthor=None,first='!!!'):
   
   patternG2=re.compile(r"!contribute +([a-z0-9 ,]*) *(?:\?owner=(\S*))?")
-  xG2=patternG2.finditer(message.content)
-  xG3=patternG2.finditer(message.content)
+  xG2=len(list(patternG2.finditer(message.content)))==1 and message.content.startswith("!contribute")
+  xG3=len(list(patternG2.finditer(message.content)))==1 and message.content.startswith("!contribute")
   #
   link0='https://www.desmos.com/calculator/'+str(hash)
   geti=getinfo(link0)
   if geti!={}:
-    if (hash not in GraphsList if len(list(xG2))!=1 else (first=='!!!' if hash in GraphsList else True)*(hash not in [ele[0] for ele in setup.HashPlusCard])) and (geti['title'] is not None if first=='!!!' else True):
+    if (hash not in GraphsList if not xG2 else (first=='!!!' if hash in GraphsList else True)*(hash not in [ele[0] for ele in setup.HashPlusCard])) and (geti['title'] is not None if first=='!!!' else True):
       await setup.Onready()
       user=message.author
       embed=nextcord.Embed(title=str(geti['title']),description=link0)
@@ -54,7 +54,7 @@ async def recGraphE(message,hash,theauthor=None,first='!!!'):
       if geti['parent_hash'] is not None:
         await recGraphE(message,geti['parent_hash'],theauthor,first='')
       return graphcard
-    elif (len(list(xG3))==1 and (hash in [ele[0] for ele in setup.HashPlusCard]) and first=='!!!'):
+    elif (xG3 and (hash in [ele[0] for ele in setup.HashPlusCard]) and first=='!!!'):
       await setup.Onready()
       user=message.author
       getid=[ele[1] for ele in setup.HashPlusCard if ele[0]==hash]
@@ -86,7 +86,7 @@ async def OnMessageG(message):
   patternG=re.compile(r"https:\/\/www.desmos.com\/calculator\/((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
   xG=patternG.finditer(message.content)
   patternG2=re.compile(r"!contribute +([a-z0-9 ,]*) *(?:\?owner=(\S*))?")
-  xG2=patternG2.finditer(message.content)
+  xG2=len(list(patternG2.finditer(message.content)))==1 and message.content.startswith("!contribute")
   patternG3=re.compile(r"!bump +((?:[a-z0-9]{20})|(?:[a-z0-9]{10}))")
   xG3=patternG3.finditer(message.content)
   
@@ -96,7 +96,7 @@ async def OnMessageG(message):
     Gss=[ii.group(1) for ii in patternG.finditer(message.content)]
     for Gs in Gss:
       await recGraphE(message,Gs)
-  elif len(list(xG2))==1:
+  elif xG2:
     await getready(message)
     RecMsg = await record(message)
     Gss=[ii.group(1) for ii in patternG2.finditer(message.content)][0].replace(' ','').split(',')
