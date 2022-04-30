@@ -1,5 +1,6 @@
 from keep_alive import keep_alive
 import nextcord
+from nextcord.ui import Button, View
 import os
 import re
 from replit import db
@@ -141,9 +142,11 @@ async def on_message(message):
     helpembed.add_field(name="Bulk Contribute/Set owner of a graph", value='```!contribute {list of graph hashes}?owner={author name}```', inline=False)
     helpembed.add_field(name="Quick Graph f(x)", value='```!graph {some f(x) function}```', inline=True)
     helpembed.add_field(name="Create Desmos Graph", value='```!create```\nSee README to learn more about !create', inline=True)
-    helpembed.add_field(name="README/Manual", value='➡️ https://mathenthusiastpi.gitbook.io/desmobot/ ⬅️', inline=False)
     helpembed.set_author(name=str(message.author), icon_url=message.author.display_avatar.url)
-    await message.channel.send(embed=helpembed,content='DM me for desmos/bot related help:)\n\u200B')
+    button=Button(label='Documentation',url='https://mathenthusiastpi.gitbook.io/desmobot/',emoji='📜')
+    view=View()
+    view.add_item(button)
+    await message.channel.send(embed=helpembed,content='DM me for desmos/bot related help:)\n\u200B',view=view)
   elif len(list(x03))==1:
     await GraphStuff(message)
   elif message.content=="!loading":

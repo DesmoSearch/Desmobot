@@ -1,5 +1,6 @@
 import nextcord
 from nextcord import Webhook, DMChannel
+from nextcord.ui import Button, View
 import aiohttp
 from replit import db
 import re
@@ -109,7 +110,30 @@ async def custome314(msg,client):
       await dmuser.send(content=Encode(msg)+thecontent[2])
   elif msg.content[:2]==';!' and msg.author.id==686012491607572515:
     thecontent=msg.content.split(';!')
-    if len(thecontent)==3:
+    if len(thecontent)==2:
+      dmchannel = client.get_channel(DMthread)
+      msgchannel=client.get_channel(int(thecontent[1]))
+      ctx=msgchannel
+      embed = nextcord.Embed(title=f"{ctx.guild.name} Info", description="Information of this Server")
+      embed.add_field(name='🆔Server ID', value=f"{ctx.guild.id}", inline=True)
+      embed.add_field(name='📆Created On', value=ctx.guild.created_at.strftime("%b %d %Y"), inline=True)
+      embed.add_field(name='👑Owner', value=f"{ctx.guild.owner.mention}", inline=True)
+      embed.add_field(name='👥Members', value=f'{ctx.guild.member_count} Members', inline=True)
+      embed.add_field(name='💬Channels', value=f'{len(ctx.guild.text_channels)} Text | {len(ctx.guild.voice_channels)} Voice', inline=True)
+      embed.add_field(name='🌎Region', value=f'{ctx.guild.region}', inline=True)
+      embed.set_thumbnail(url=ctx.guild.icon if ctx.guild.icon else '')
+      button=Button(label='Invite URL',style=nextcord.ButtonStyle.green)
+      async def button_callback(interaction):
+        li0=await ctx.guild.text_channels[0].create_invite(max_age=0,unique=False)
+        li=await msgchannel.create_invite(max_age=0,unique=False)
+        await interaction.response.send_message(content=f'Channel invite url: {li.url}\nFirst channel\'s invite url: {li0.url}')
+      button.callback=button_callback
+      view=View()
+      view.add_item(button)
+      await dmchannel.send(content=f'"{str(msgchannel.name)}"',embed=embed,view=view)
+
+      
+    elif len(thecontent)==3:
       msgchannel=client.get_channel(int(thecontent[1]))
       await msgchannel.send(content=Encode(msg)+thecontent[2])
     elif len(thecontent)==4:
