@@ -58,8 +58,6 @@ async def DiffStuff(message,reactmode=False):
       reactmoji4.append('👉')
     
     reactmoji4.append('✅')
-    if str(message.author.id)=='686012491607572515':
-       reactmoji4.append('❌')
   
     for react in reactmoji4:
         await msg4.add_reaction(react)
@@ -141,9 +139,7 @@ async def DiffStuff(message,reactmode=False):
         RecMsg = await record(msg4,RecMsg)
     elif '✅' in str(res4.emoji):
         return await msg4.clear_reactions()
-    elif '❌' in str(res4.emoji):
-        await message.delete()
-        return await msg4.delete()
+
 
 def diffembed(Gnum,num,result,max_page,message,graph1,graph2,ghash1list):
   #from createembed()

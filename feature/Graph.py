@@ -76,8 +76,6 @@ async def GraphStuff(message):
         reactmoji3.append('🔄')
       reactmoji3.extend(['➡️','⬆️','⬅️','⬇️','🔬','🔭','✅'])
       
-      if str(message.author.id)=='686012491607572515':
-         reactmoji3.append('❌')
 
       for react in reactmoji3:
           await msg3.add_reaction(react)
@@ -99,9 +97,6 @@ async def GraphStuff(message):
           pass
       elif '✅' in str(res3.emoji):
           return await msg3.clear_reactions()
-      elif '❌' in str(res3.emoji):
-          await message.delete()
-          return await msg3.delete()
       else:
 
         if '🔄' in str(res3.emoji):

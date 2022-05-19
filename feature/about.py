@@ -31,9 +31,6 @@ async def expandG(emoji,user,messageid,channelid,channel0,message0):
       reactmoji2=[]
       
       reactmoji2.append('✅')
-      if str(message0.author.id)=='686012491607572515':
-         reactmoji2.append('❌')
-
 
       for react2 in reactmoji2:
           await msg2.add_reaction(react2)
@@ -56,8 +53,6 @@ async def expandG(emoji,user,messageid,channelid,channel0,message0):
           pass
       elif '✅' in str(res2.emoji):
           return await msg2.clear_reactions()
-      elif '❌' in str(res2.emoji):
-          return await msg2.delete()
       elif '🖱️' in str(res2.emoji) or '👈' in str(res2.emoji) or '👉' in str(res2.emoji):
           dachoose2=await aboutchain(message0,thehash01,msg2,[True,-10,res2,user2,dachoose2])
 
@@ -177,8 +172,6 @@ async def onmessage1(message):
         reactmoji.extend(['🔼', '🔽'])
 
     reactmoji.append('✅')
-    if str(message.author.id)=='686012491607572515':
-       reactmoji.append('❌')
     if GnumDisplay==1:
       reactmoji.append('🔎')
 
@@ -235,9 +228,6 @@ async def onmessage1(message):
         dachoose=[None,searchresult[Gnum-1],[searchresult[Gnum-1]],RecMsg]
     elif '✅' in str(res.emoji):
         return await msg.clear_reactions()
-    elif '❌' in str(res.emoji):
-        await message.delete()
-        return await msg.delete()
     elif '🔎' in str(res.emoji):
         infograph=1-infograph
         await msg.clear_reactions()
@@ -271,8 +261,6 @@ async def onmessage2(message):
     reactmoji2=[]
     
     reactmoji2.append('✅')
-    if str(message.author.id)=='686012491607572515':
-       reactmoji2.append('❌')
   
     for react2 in reactmoji2:
         await msg2.add_reaction(react2)
@@ -294,9 +282,6 @@ async def onmessage2(message):
         pass
     elif '✅' in str(res2.emoji):
         return await msg2.clear_reactions()
-    elif '❌' in str(res2.emoji):
-        await message.delete()
-        return await msg2.delete()
     elif '🖱️' in str(res2.emoji) or '👈' in str(res2.emoji) or '👉' in str(res2.emoji):
         dachoose2=await aboutchain(message,thehash01,msg2,[True,None,res2,user2,dachoose2])
 

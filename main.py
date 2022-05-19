@@ -75,6 +75,9 @@ async def on_raw_reaction_add(payload):
       message0.content='!/'+thehashhh
       message0.author=user
       await DiffStuff(message0,True)
+  elif emoji.name=='❌' and user.id==686012491607572515:
+    if message0.author.id==client.user.id:
+      await message0.delete()
       
 
 @client.event
