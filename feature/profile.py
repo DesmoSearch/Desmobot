@@ -57,7 +57,8 @@ async def seeprofile(message):
     if len(modnamesl)>0:
       output.add_field(name="Modules", value='```'+','.join(modnamesl)+'```', inline=False)
     #
-    await message.channel.send(embed=output)
+    outputrec=await message.channel.send(embed=output)
+    RecMsg = await record(outputrec,RecMsg)
   else:
     THEuser=await client.fetch_user(str(ruserid))
     await message.channel.send(content='User "'+str(THEuser)+'" has no profile created.\nTo create a profile, check out: https://mathenthusiastpi.gitbook.io/desmos/commands/profile')

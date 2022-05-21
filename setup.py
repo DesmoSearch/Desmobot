@@ -19,6 +19,7 @@ banned=[]
 async def Onready():
   global setup
   if setup:
+    await client.change_presence(activity=nextcord.Game(name="Loading, please wait..."))
     for guild in client.guilds:
       print(guild.name+':'+str(guild.id))
     '''for guildid in []:
