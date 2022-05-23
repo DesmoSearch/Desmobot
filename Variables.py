@@ -1,10 +1,22 @@
 from replit import db
 import copy
+import requests
 
-ParentGraphsList=copy.deepcopy(db['ParentGraphsList'].value)
-thetitles=copy.deepcopy(db['thetitles'].value)
-GraphsList=copy.deepcopy(db['GraphsList'].value)
-objowner=copy.deepcopy(db['objowner'].value)
+#https://stackoverflow.com/questions/38491722/reading-a-github-file-using-python-returns-html-tags
+def getDataURL(url0):
+  req = requests.get(url0)
+  if req.status_code == requests.codes.ok:
+      req = req.json()
+      print(len(req))
+      return req
+  else:
+      print('Content was not found.')
+
+
+ParentGraphsList=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/ParentGraphsList.json'))
+thetitles=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/thetitles.json'))
+GraphsList=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/GraphsList.json'))
+objowner=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/objowner.json'))
 bump={}
 noofresults=5
 def checkIfDuplicates(listOfElems):
@@ -14,3 +26,4 @@ def checkIfDuplicates(listOfElems):
         return False
     else:
         return True
+
