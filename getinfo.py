@@ -15,7 +15,12 @@ def getinfo(hashurl):
     for key in [x for x in ['hash','parent_hash','thumbUrl','stateUrl','title','access','created'] if x in json.loads(soup.body['data-load-data'])['graph'].keys()]:
       finaldict[key]=json.loads(soup.body['data-load-data'])['graph'][key]
     finaldict['version']='null'
-    dastate=json.loads(soup.body['data-load-data'])['graph']['state']
+
+    html2 = urlopen('https://saved-work.desmos.com/calc-states/production/derivative').read()
+    soup2 = BeautifulSoup(html2, features="html.parser")
+    dastate=(json.loads(soup2.get_text()))
+    
+    #dastate=json.loads(soup.body['data-load-data'])['graph']['state']
     if 'version' in dastate.keys():
       finaldict['version']=dastate['version']
     if 'expressions' in dastate.keys():

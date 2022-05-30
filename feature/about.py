@@ -359,7 +359,7 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
   if 'thumbUrl' in dainfo.keys():
     embed.set_image(url=dainfo['thumbUrl'])
   if objowner.get(str(thehash),None) is not None:
-    embed.add_field(name="Possible Author", value=re.sub('<@!?[0-9]*>','',objowner.get(str(thehash),None)), inline=False)
+    embed.add_field(name="Shared by", value=re.sub('<@!?[0-9]*>','',objowner.get(str(thehash),None)), inline=False)
   
   embed.add_field(name="Date Created", value="<t:"+str(round(maya.parse(dainfo['created']).datetime().timestamp()))+":F>", inline=True)
   embed.add_field(name="Version", value="```"+str(dainfo['version'])+"```", inline=True)
@@ -391,7 +391,8 @@ def aboutembed(message,thehash,fromSearch,underline,historylist):
   graphnodes=list(set(graphnodes))
   for iI in range(len(graphnodes)):
     Get=getinfo("https://www.desmos.com/calculator/"+graphnodes[iI])
-    parentnodes.append(Get['parent_hash'])
+    if 'parent_hash' in Get.keys():
+      parentnodes.append(Get['parent_hash'])
   gtree = Tree()
   gtree.create_node("Graphs", "Graphs")
   for iI2 in range(len(graphnodes)):
