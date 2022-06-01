@@ -16,7 +16,7 @@ def getinfo(hashurl):
       finaldict[key]=json.loads(soup.body['data-load-data'])['graph'][key]
     finaldict['version']='null'
 
-    html2 = urlopen('https://saved-work.desmos.com/calc-states/production/derivative').read()
+    html2 = urlopen('https://saved-work.desmos.com/calc-states/production/'+finaldict['hash']).read()
     soup2 = BeautifulSoup(html2, features="html.parser")
     dastate=(json.loads(soup2.get_text()))
     
