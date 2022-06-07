@@ -117,7 +117,7 @@ async def setupDmodule():
 HashPlusCard=[]
 async def ggupdate():
   import Variables
-  channel=client.get_channel(959405907857522728)
+  channel=client.get_channel(Variables.GRAPHSCHANNEL)
   async for msgg in channel.history(limit=50000):
     hash=msgg.embeds[0].fields[1].value
     if hash not in GraphsList:

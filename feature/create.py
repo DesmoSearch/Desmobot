@@ -283,7 +283,7 @@ async def compiledesmython(string,message):
       des=str(message.author.id)+'|'+str(message.id)
     else:
       des=str(message.channel.id)+';'+str(message.id)
-    channel123 = client.get_channel(959405907857522728)
+    channel123 = client.get_channel(Variables.GRAPHSCHANNEL)
     graphcard=await channel123.send(content=des+'!!!',embed=embed)
     setup.HashPlusCard.append((str(GraphCreated),graphcard.id))
     Variables.GraphsList.append(str(GraphCreated))

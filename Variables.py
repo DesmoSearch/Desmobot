@@ -13,12 +13,13 @@ def getDataURL(url0):
       print('Content was not found.')
 
 
-ParentGraphsList=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/ParentGraphsList.json'))
-thetitles=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/thetitles.json'))
-GraphsList=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/GraphsList.json'))
-objowner=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/DesmoSearch/main/data/objowner.json'))
+ParentGraphsList=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/Desmobot/main/DATA/ParentGraphsList'))
+thetitles=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/Desmobot/main/DATA/thetitles'))
+GraphsList=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/Desmobot/main/DATA/GraphsList'))
+objowner=copy.deepcopy(getDataURL('https://raw.githubusercontent.com/DesmoSearch/Desmobot/main/DATA/objowner'))
 bump={}
 noofresults=5
+GRAPHSCHANNEL=983620015246962688
 def checkIfDuplicates(listOfElems):
     ''' Check if given list contains any duplicates '''
     listOfElems=list(filter((None).__ne__, listOfElems))

@@ -4,8 +4,8 @@ import setup
 from setup import getready, client, record
 from getinfo import getinfo
 import Variables
-from Variables import GraphsList, objowner
-channelgraphs = 959405907857522728
+from Variables import GraphsList, objowner, GRAPHSCHANNEL
+channelgraphs = GRAPHSCHANNEL
 async def recGraphE(message,hash,theauthor=None,first='!!!'):
   
   patternG2=re.compile(r"!contribute +([a-z0-9 ,]*) *(?:\?owner=(\S*))?")
