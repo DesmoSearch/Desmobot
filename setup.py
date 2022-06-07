@@ -33,6 +33,20 @@ async def Onready():
     print('started ggupdate')
     await ggupdate()
     await bannedU()
+    '''import json
+    import Variables
+    f = open("DATA/GraphsList", "w")
+    f.write(json.dumps(Variables.GraphsList))
+    f.close()
+    f2 = open("DATA/ParentGraphsList", "w")
+    f2.write(json.dumps(Variables.ParentGraphsList))
+    f2.close()
+    f3 = open("DATA/objowner", "w")
+    f3.write(json.dumps(Variables.objowner))
+    f3.close()
+    f4 = open("DATA/thetitles", "w")
+    f4.write(json.dumps(Variables.thetitles))
+    f4.close()'''
     print('All Done..')
     setup=False
   await client.change_presence(activity=nextcord.Game(name=f"on {len(client.guilds)} servers | {db['searches']} times used | {len(GraphsList)} Graphs!"))
