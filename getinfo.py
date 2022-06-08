@@ -1,4 +1,4 @@
-from urllib.request import urlopen
+from requests import get
 from bs4 import BeautifulSoup
 import json
 import re
@@ -8,7 +8,7 @@ from pylatexenc.latex2text import LatexNodes2Text
 def getinfo(hashurl):
   if "*" in hashurl or '$' in hashurl:
     return {}
-  html = urlopen(hashurl).read()
+  html = get(hashurl).content
   soup = BeautifulSoup(html, features="html.parser")
   finaldict={}
   if 'graph' in json.loads(soup.body['data-load-data']).keys():
@@ -16,9 +16,10 @@ def getinfo(hashurl):
       finaldict[key]=json.loads(soup.body['data-load-data'])['graph'][key]
     finaldict['version']='null'
 
-    html2 = urlopen('https://saved-work.desmos.com/calc-states/production/'+finaldict['hash']).read()
-    soup2 = BeautifulSoup(html2, features="html.parser")
-    dastate=(json.loads(soup2.get_text()))
+    html2 = get('https://saved-work.desmos.com/calc-states/production/'+finaldict['hash']).content
+    #soup2 = BeautifulSoup(html2, features="html.parser")
+    #print(soup2)
+    dastate=(json.loads(html2))
     
     #dastate=json.loads(soup.body['data-load-data'])['graph']['state']
     if 'version' in dastate.keys():
