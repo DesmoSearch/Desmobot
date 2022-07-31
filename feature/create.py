@@ -19,7 +19,7 @@ def randomcharlen(leng):
   return(''.join(map(choice,["bcdfghjklmnpqrstvwxz7","aeiouyaeiouy0"]*int(leng/2))))
 
 def variablerep(string):
-  string=re.sub('(\) *[\^\/] *\(.*\))','\\1\ue014',string)
+  string=re.sub('(\) *[\^\/] *\(.*?\))','\\1\ue014',string)
   return re.sub('(.)_([A-Za-z0-9]*)', '\\1_\\2\ue014', string)
   
 def desmotable2(table):
